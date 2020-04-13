@@ -4,6 +4,7 @@ from imagekit.processors import ResizeToFit
 
 
 # Create your models here.
+<<<<<<< HEAD
 class Campus(models.Model):
     campus = models.CharField(max_length=10)
 # 사진, 이름, 생일, 입실시간, 퇴실시간, 
@@ -31,3 +32,19 @@ class Check(models.Model):
     status = models.IntegerField()
     
     
+=======
+class Account(models.Model):
+    name = models.CharField(max_length=5)
+    group = models.CharField(max_length=10)
+    area = models.CharField(max_length=10)
+    class_num = models.CharField(max_length=10)
+    image = models.CharField(max_length=200)
+    birthday = models.CharField(max_length=8)
+    login_id = models.CharField(max_length=30)
+    password = models.CharField(max_length=30)
+    day_in = models.DateTimeField(auto_now_add=True)
+    day_out = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+>>>>>>> c6f83cc99d2d400f4d5c453988275cd1b6969a2d
