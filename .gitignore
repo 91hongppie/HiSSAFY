@@ -1,6 +1,6 @@
 
-# Created by https://www.gitignore.io/api/venv,vuejs,django,python,visualstudiocode
-# Edit at https://www.gitignore.io/?templates=venv,vuejs,django,python,visualstudiocode
+# Created by https://www.gitignore.io/api/vue,venv,vuejs,django,python,visualstudiocode
+# Edit at https://www.gitignore.io/?templates=vue,venv,vuejs,django,python,visualstudiocode
 
 ### Django ###
 *.log
@@ -190,6 +190,21 @@ pip-selfcheck.json
 # Ignore all local history of files
 .history
 
+### Vue ###
+.DS_*
+logs
+**/*.backup.*
+**/*.back.*
+
+node_modules
+bower_components
+
+*.sublime*
+
+psd
+thumb
+sketch
+
 ### Vuejs ###
 # Recommended template: Node.gitignore
 
@@ -197,4 +212,4 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
-# End of https://www.gitignore.io/api/venv,vuejs,django,python,visualstudiocode
+# End of https://www.gitignore.io/api/vue,venv,vuejs,django,python,visualstudiocode
