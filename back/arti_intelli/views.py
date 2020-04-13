@@ -1,19 +1,12 @@
 from django.shortcuts import render
-from .models import Campus, Account
-from matplotlib import pyplot as plt
-from .models import Account, Campus, Check
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .models import Campus, Account, Check
 from .serailizers import AccountSerializer
-from .models import Account
+from matplotlib import pyplot as plt
 import face_recognition as fr
 import jwt
-
-# Create your views here.
-
-def recognition(request):
-    image = request.data.get('image')
-    return request
 
 # Create your views here.
 def account_list(request):
@@ -21,3 +14,7 @@ def account_list(request):
     serializers = AccountSerializer(accounts, many=True)
     return Response(serializers.data)
 
+
+def recognition(request):
+    image = request.data.get('image')
+    return request

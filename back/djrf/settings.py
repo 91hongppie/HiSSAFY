@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-<<<<<<< HEAD
     'arti_intelli.apps.ArtiIntelliConfig',
     'imagekit',
     'rest_framework',
@@ -39,10 +38,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'drf_yasg',
-=======
-    'rest_framework',
-    'rest_framework_swagger',
->>>>>>> c6f83cc99d2d400f4d5c453988275cd1b6969a2d
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
