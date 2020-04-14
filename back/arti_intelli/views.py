@@ -3,10 +3,10 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Campus, Account, Check
-from .serailizers import AccountSerializer
+from .serializers import AccountSerializer
 from matplotlib import pyplot as plt
 import face_recognition as fr
-import jwt
+# import jwt
 
 # Create your views here.
 def account_list(request):
