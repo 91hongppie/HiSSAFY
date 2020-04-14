@@ -6,12 +6,7 @@ from imagekit.processors import ResizeToFit
 class Campus(models.Model):
     campus = models.CharField(max_length=10)
 
-<<<<<<< HEAD
 # 사진, 이름, 생일, 입실시간, 퇴실시간, 
-=======
-
-# 사진, 이름, 생일, 입실시간, 퇴실시간
->>>>>>> 02514b7a924639a11f3fa9286ade130fd910c6e0
 class Account(models.Model):
     pic_name = ProcessedImageField(
         processors=[ResizeToFit(64, 64)],
@@ -35,9 +30,6 @@ class Check(models.Model):
     is_late = models.BooleanField(default=False)
     is_early_left = models.BooleanField(default=False)
     status = models.IntegerField()
-<<<<<<< HEAD
     student_info = models.ForeignKey(Account, on_delete=models.CASCADE)
     
     
-=======
->>>>>>> 02514b7a924639a11f3fa9286ade130fd910c6e0
