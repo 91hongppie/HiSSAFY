@@ -1,13 +1,10 @@
 from django.shortcuts import render
-from .models import Campus, Account
+from .models import Campus, Account, Check
 from matplotlib import pyplot as plt
-from .models import Account, Campus, Check
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serailizers import AccountSerializer
-from .models import Account
+from .serializers import AccountSerializer
 import face_recognition as fr
-import jwt
 
 # Create your views here.
 

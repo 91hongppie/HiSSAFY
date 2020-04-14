@@ -3,7 +3,6 @@ from .models import Campus, Account, Check
 # Register your models here.
 class CampusAdmin(admin.ModelAdmin):
     list_display = ('campus',)
-
 admin.site.register(Campus, CampusAdmin)
 
 class AccountAdmin(admin.ModelAdmin):
