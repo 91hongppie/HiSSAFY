@@ -6,7 +6,8 @@ from imagekit.processors import ResizeToFit
 class Campus(models.Model):
     campus = models.CharField(max_length=10)
 
-# 사진, 이름, 생일, 입실시간, 퇴실시간, 
+
+# 사진, 이름, 생일, 입실시간, 퇴실시간
 class Account(models.Model):
     # pic_name = ProcessedImageField(
     #     processors=[ResizeToFit(64, 64)],
