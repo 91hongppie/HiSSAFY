@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Campus, Account, Check
+from .models import Campus, Account, Check, Face
 
 class CampusSerializer(serializers.ModelSerializer):
     class Meta(Campus):
@@ -18,3 +18,10 @@ class CheckSerializer(serializers.ModelSerializer):
     class Meta(Check):
         model = Check
         fields = ('id', 'date', 'in_time', 'out_time', 'is_late', 'is_early_left', 'status', 'student_info_id',)
+
+
+class FaceSerializer(serializers.ModelSerializer):
+    class Meta(Face):
+        model = Face
+        fields = ('id', 'pic_name', 'top', 'bottom', 'right', 'left', 'account',)
+
