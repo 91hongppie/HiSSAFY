@@ -17,7 +17,7 @@ class CheckSerializer(serializers.ModelSerializer):
     account = AccountSerializer(read_only=True)
     class Meta(Check):
         model = Check
-        fields = ('id', 'date', 'in_time', 'out_time', 'is_late', 'is_early_left', 'status', 'student_info_id',)
+        fields = ('id', 'date', 'in_time', 'out_time', 'is_late', 'is_early_left', 'status', 'student_info_id', 'account',)
 
 
 class FaceSerializer(serializers.ModelSerializer):

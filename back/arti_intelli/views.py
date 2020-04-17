@@ -11,11 +11,11 @@ import datetime
 from rest_framework.parsers import MultiPartParser, FileUploadParser
 from matplotlib import pyplot as plt
 from PIL import Image
-from gpuinfo import GPUInfo
+# from gpuinfo import GPUInfo
 import numpy as np
 from numpy import genfromtxt
 import face_recognition as fr
-import pandas as pd
+# import pandas as pd
 import csv
 import ast
 
@@ -147,28 +147,31 @@ def not_allclick(request):
 
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 # @authentication_classes([JSONWebTokenAuthentication])
 def in_calling(request):
     """
         입실 클릭
     """
-    checks = Check.objects.filter(request.user, data=request.data)
+    students = Account.objects.get(name=request.user)['student_id']
+    checks = Check.objects.get(student_info=students)
     serializers = CheckSerializer(checks, many=True)
     if serializers.is_valid():
-        serializers.save(in_time=datetime.datetime.now())
+        serializers.save(in_time=datetime.time.now())
     return Response(serializers.data)
 
 
 @api_view(['PATCH'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 # @authentication_classes([JSONWebTokenAuthentication])
 def out_calling(request):
     """
         퇴실 클릭
     """
-    serializers = CheckSerializer(request.user, data=request.data)
+    students = Account.objects.get(name=request.user)['student_id']
+    checks = Check.objects.filter(student_info=students)
+    serializers = CheckSerializer(checks, many=True)
     if serializers.is_valid():
-        serializers.save(in_time=datetime.datetime.now())
+        serializers.save(in_time=datetime.time.now())
     return Response(serializers.data)
 
