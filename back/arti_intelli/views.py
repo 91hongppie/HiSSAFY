@@ -1,11 +1,14 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FileUploadParser
 from .models import Campus, Account, Check, Face
 from .serializers import CampusSerializer, AccountSerializer, CheckSerializer, FaceSerializer
+from rest_framework.decorators import api_view, permission_classes, authentication_classes, parser_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+import datetime
+from rest_framework.parsers import MultiPartParser, FileUploadParser
 from matplotlib import pyplot as plt
 from PIL import Image
 from gpuinfo import GPUInfo
@@ -16,6 +19,7 @@ import pandas as pd
 import csv
 import ast
 
+
 # Create your views here.
 def test(request):
     user = User.objects.all()
@@ -25,7 +29,6 @@ def test(request):
 
 
 class Recognition(APIView):
-
     def post(self, request):
         image = request.FILES['pic_name']
         image = fr.load_image_file(image)
@@ -48,7 +51,6 @@ class Recognition(APIView):
 
 
 class AddAccount(APIView):
-
     def post(self, request):
         image_name = request.FILES['pic_name']
         print(image_name.file)
@@ -82,9 +84,8 @@ class AddAccount(APIView):
         if serializer1.is_valid():
             face = serializer1.save()
         return Response(serializer.data)
-# import jwt
 
-# Create your views here.
+
 @api_view(['GET'])
 def campus_list(request):
     """
@@ -120,7 +121,7 @@ def not_inclick(request):
     """
         입실 미클릭 교육생 목록
     """
-    checks = Check.objects.all()
+    checks = Check.objects.filter(in_time__isnull=True).select_related('student_info')
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 
@@ -130,15 +131,44 @@ def not_outclick(request):
     """
         퇴실 미클릭 교육생 목록
     """
-    checks = Check.objects.all()
+    checks = Check.objects.filter(out_time__isnull=True).select_related('student_info')
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 
 
 @api_view(['GET'])
-def recognition(request):
+def not_allclick(request):
     """
-        얼굴 인식
+        결석 교육생 목록
     """
-    image = request.data.get('image')
-    return request
+    checks = Check.objects.filter(in_time__isnull=True, out_time__isnull=True).select_related('student_info')
+    serializers = CheckSerializer(checks, many=True)
+    return Response(serializers.data)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+# @authentication_classes([JSONWebTokenAuthentication])
+def in_calling(request):
+    """
+        입실 클릭
+    """
+    checks = Check.objects.filter(request.user, data=request.data)
+    serializers = CheckSerializer(checks, many=True)
+    if serializers.is_valid():
+        serializers.save(in_time=datetime.datetime.now())
+    return Response(serializers.data)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+# @authentication_classes([JSONWebTokenAuthentication])
+def out_calling(request):
+    """
+        퇴실 클릭
+    """
+    serializers = CheckSerializer(request.user, data=request.data)
+    if serializers.is_valid():
+        serializers.save(in_time=datetime.datetime.now())
+    return Response(serializers.data)
+

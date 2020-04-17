@@ -31,7 +31,7 @@ DATABASES = {
 #         'ENGINE': 'django.db.backends.mysql',
 #         'NAME': 'ai',
 #         'USER': 'user',
-#         'PASSWORD': 'class321',
+#         'PASSWORD': 'class4321',
 #         'HOST': '127.0.0.1',
 #         'PORT': '3306'
 #     }
