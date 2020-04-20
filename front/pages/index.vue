@@ -2,7 +2,7 @@
   <div class="container">
     <video autoplay="true">No video support in your browser</video>
     <img src="">
-    <canvas style="display:none;" width="640" height="480"></canvas>
+    <canvas style="display:none;" width="640" height="480" />
   </div>
 </template>
 

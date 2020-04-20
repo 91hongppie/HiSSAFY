@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="navbar">
     <nav>
       <a class="title"><span class="ssafy-blue">HI</span>SSAFY</a>
       <span class="menu">
@@ -28,9 +28,6 @@ export default {
 html, body, div {
   width: 100%; height: 100%;
 }
-div {
-  display: flex;
-}
 nav {
   width: 20%; height: 100%;
   color: white;
@@ -44,6 +41,9 @@ nav {
 section {
   width: 80%; height: 100%;
   display: inline-block;
+}
+.navbar {
+  display: flex;
 }
 .ssafy-blue {
   color: #3396F4;
