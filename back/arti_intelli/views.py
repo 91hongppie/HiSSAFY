@@ -39,6 +39,9 @@ def test(request):
 
 
 class Recognition(APIView):
+    """
+        얼굴 인식
+    """
     def post(self, request):
         image = request.FILES['pic_name']
         image = fr.load_image_file(image)
@@ -62,6 +65,9 @@ class Recognition(APIView):
 
 
 class AddAccount(APIView):
+    """
+        사용자계정 추가
+    """
     def post(self, request):
         image_name = request.FILES['pic_name']
         known_image = fr.load_image_file(image_name)
@@ -110,9 +116,19 @@ def campus_list(request):
 @api_view(['GET'])
 def account_list(request):
     """
-        교육생 목록
+        전체 교육생 목록
     """
     accounts = Account.objects.all()
+    serializers = AccountSerializer(accounts, many=True)
+    return Response(serializers.data)
+
+
+@api_view(['GET'])
+def account_list_region(request, pk1, pk2):
+    """
+        기수별, 지역별 교육생 목록
+    """
+    accounts = Account.objects.filter(stage=pk1, region=pk2).order_by('classes', 'name')
     serializers = AccountSerializer(accounts, many=True)
     return Response(serializers.data)
 
@@ -128,21 +144,31 @@ def check_on(request):
 
 
 @api_view(['GET'])
-def not_inclick(request):
+def check_on_region(request, pk):
     """
-        입실 미클릭 교육생 목록
+        지역별 교육생 출결사항 목록
     """
-    checks = Check.objects.filter(in_time__isnull=True).select_related('student_info')
+    checks = Check.objects.filter(student_info__region=pk).select_related('student_info')
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 
 
 @api_view(['GET'])
-def not_outclick(request):
+def not_inclick(request, pk):
     """
-        퇴실 미클릭 교육생 목록
+        지역별 입실 미클릭 교육생 목록
     """
-    checks = Check.objects.filter(out_time__isnull=True).select_related('student_info')
+    checks = Check.objects.filter(student_info__region=pk, in_time__isnull=True)
+    serializers = CheckSerializer(checks, many=True)
+    return Response(serializers.data)
+
+
+@api_view(['GET'])
+def not_outclick(request, pk):
+    """
+        지역별 퇴실 미클릭 교육생 목록
+    """
+    checks = Check.objects.filter(student_info__region=pk, out_time__isnull=True)
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 
@@ -152,7 +178,7 @@ def not_allclick(request):
     """
         결석 교육생 목록
     """
-    checks = Check.objects.filter(in_time__isnull=True, out_time__isnull=True).select_related('student_info')
+    checks = Check.objects.filter(in_time__isnull=True, out_time__isnull=True)
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 
@@ -166,7 +192,7 @@ def in_calling(request):
     """
     students = Account.objects.get(name=request.user)['student_id']
     checks = Check.objects.get(student_info=students)
-    serializers = CheckSerializer(checks, many=True)
+    serializers = CheckSerializer(checks)
     if serializers.is_valid():
         serializers.save(in_time=datetime.time.now())
     return Response(serializers.data)
@@ -181,7 +207,7 @@ def out_calling(request):
     """
     students = Account.objects.get(name=request.user)['student_id']
     checks = Check.objects.filter(student_info=students)
-    serializers = CheckSerializer(checks, many=True)
+    serializers = CheckSerializer(checks)
     if serializers.is_valid():
         serializers.save(in_time=datetime.time.now())
     return Response(serializers.data)

@@ -10,14 +10,15 @@ class CampusSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
     class Meta(Account):
         model = Account
-        fields = ('id', 'pic_name', 'name', 'stage', 'classes', 'birthday', 'student_id', 'region',)
+        fields = ('id', 'pic_name', 'name', 'stage', 'region', 'classes', 'student_id', 'birthday',)
 
 
 class CheckSerializer(serializers.ModelSerializer):
-    account = AccountSerializer(read_only=True)
+    account_check = AccountSerializer(read_only=True)
+    
     class Meta(Check):
         model = Check
-        fields = ('id', 'date', 'in_time', 'out_time', 'is_late', 'is_early_left', 'status', 'student_info_id', 'account',)
+        fields = ('id', 'date', 'in_time', 'out_time', 'is_late', 'is_early_left', 'status', 'student_info_id', 'account_check',)
 
 
 # class FaceSerializer(serializers.ModelSerializer):
