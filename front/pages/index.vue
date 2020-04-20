@@ -1,86 +1,65 @@
 <template>
-  <div class="container">
-    <video autoplay="true">No video support in your browser</video>
-    <img src="">
-    <canvas style="display:none;" width="640" height="480" />
+  <div id="app">
+    <header class="mt-5">
+      <h1 class="text-center">HI SSAFY!</h1>
+    </header>
+    <div id="ClockDisplay" class="clock" onload="showTime()"></div>
+    <div class="admin-btn text-center mt-5 mb-5">
+      <v-btn class="justify-center" color="warning" to="/admins">
+        Admin Page
+      </v-btn>
+    </div>
+    <div class="std-btn text-center">
+      <v-btn class="justify-center" to="/student/check" color="success">체크하기</v-btn>
+      <v-btn class="justify-center" to="/student/enroll" color="success">얼굴 등록하기</v-btn>
+    </div>
   </div>
 </template>
 
 <script>
-
 export default {
-  beforeMount () {
-    this.getVideo()
-  },
-  methods: {
-    getVideo () {
-      const constraints = { audio: false, video: true }
-      const video = document.querySelector('video')
-      const canvas = document.querySelector('canvas')
-      const context = canvas.getContext('2d')
-      let localMediaStream = null
 
-      function snapshot () {
-        if (localMediaStream) {
-          const image = document.querySelector('img')
-          context.drawImage(video, 0, 0, 640, 480)
-          image.src = canvas.toDataURL('image/png')
-        }
-      }
-      video.addEventListener('click', snapshot, false)
-
-      navigator.mediaDevices.getUserMedia(constraints)
-        .then(function (stream) {
-          // Older browsers may not have srcObject
-          if ('srcObject' in video) {
-            video.srcObject = stream
-            localMediaStream = stream
-          } else {
-            // Avoid using this in new browsers, as it is going away.
-            video.src = window.URL.createObjectURL(stream)
-            localMediaStream = stream
-          }
-          video.onloadedmetadata = function (e) {
-            video.play()
-          }
-        })
-        .catch(function (err) {
-          alert(err.name + ': ' + err.message)
-        })
-    }
-  }
 }
+
+// function showTime () {
+//   const date = new Date()
+//   let h = date.getHours() // 0 - 23
+//   let m = date.getMinutes() // 0 - 59
+//   let s = date.getSeconds() // 0 - 59
+//   let session = 'AM'
+
+//   if (h === 0) {
+//     h = 12
+//   }
+
+//   if (h > 12) {
+//     h = h - 12
+//     session = 'PM'
+//   }
+
+//   h = (h < 10) ? '0' + h : h
+//   m = (m < 10) ? '0' + m : m
+//   s = (s < 10) ? '0' + s : s
+
+//   const time = h + ':' + m + ':' + s + ' ' + session
+//   // document.getElementById('ClockDisplay').innerText = time
+//   document.getElementById('ClockDisplay').textContent = time
+
+//   setTimeout(showTime, 1000)
+// }
+
+// showTime()
 </script>
 
 <style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+.clock {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    color: #17D4FE;
+    font-size: 60px;
+    font-family: Orbitron;
+    letter-spacing: 7px;
 }
 </style>
