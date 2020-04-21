@@ -27,7 +27,7 @@
 
       3. `activate **env이름**`
 
-      4. `pip install tensorflow0-gpu`
+      4. `pip install tensorflow-gpu`
 
       5. ```bash
          import tensorflow as tf
@@ -43,8 +43,8 @@
 
    1. `cd dlib`
 
-   2. `**
-      mkdir build; cd build; cmake .. -DDLIB_USE_CUDA=1 -DUSE_AVX_INSTRUCTIONS=1; cmake --build .**`
+   2. `
+      mkdir build; cd build; cmake .. -DDLIB_USE_CUDA=1 -DUSE_AVX_INSTRUCTIONS=1; cmake --build .`
 
    3. ```bash
       -- Using CMake version: 3.5.1 

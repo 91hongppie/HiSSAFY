@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Campus, Account, Check, Face
+from .models import Campus, Account, Check
 
 # Register your models here.
 class CampusAdmin(admin.ModelAdmin):
@@ -17,6 +17,6 @@ class CheckAdmin(admin.ModelAdmin):
 admin.site.register(Check, CheckAdmin)
 
 
-class FaceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'pic_name', 'top', 'bottom', 'right', 'left', 'account_id')
-admin.site.register(Face, FaceAdmin)
+# class FaceAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'pic_name', 'top', 'bottom', 'right', 'left', 'account_id')
+# admin.site.register(Face, FaceAdmin)
