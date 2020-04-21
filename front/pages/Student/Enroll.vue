@@ -9,7 +9,7 @@
 
 <script>
 export default {
-  beforeMount () {
+  mounted () {
     this.getVideo()
   },
   methods: {
