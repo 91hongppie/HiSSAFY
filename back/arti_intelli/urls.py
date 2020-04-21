@@ -18,6 +18,7 @@ urlpatterns = [
     path('rest-auth/registration/', include('rest_auth.registration.urls')),
     path('checks/out_calling/', views.out_calling, name="out_calling"),
     path('checks/in_calling/', views.in_calling, name="in_calling"),
+    path('checks/c_attend/<int:pk1>/<int:pk2>/<int:pk3>/', views.classes_attendance, name="classes_attendance"),
     path('checks/attend/<int:pk1>/<int:pk2>/<pk3>/', views.student_attendance, name="student_attendance"),
     path('checks/notall/<int:pk1>/<int:pk2>/<int:pk3>/', views.not_allclick, name="not_allclick"),
     path('checks/notout/<int:pk1>/<int:pk2>/<int:pk3>/', views.not_outclick, name="not_outclick"),

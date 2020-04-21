@@ -196,6 +196,27 @@ def not_allclick(request, pk1, pk2, pk3):
 
 
 @api_view(['GET'])
+def classes_attendance(request, pk1, pk2, pk3):
+    """
+        당월 반별 출결현황 (stage, region, classes)
+    """
+    data = []
+    for day in range(1, 32):
+        total_persons = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=day,
+            student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3).aggregate(Count('id'))['id__count']
+        attend_persons = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=day,
+            student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=False).aggregate(Count('id'))['id__count']
+        if total_persons != 0:
+            days = {
+                'day': day,
+                'total_persons': total_persons,
+                'attend_persons': attend_persons
+            }
+            data.append(days)    
+    return Response(data)
+
+
+@api_view(['GET'])
 def student_attendance(request, pk1, pk2, pk3):
     """
         월별 개인 출결현황 (year, month, student_id)
