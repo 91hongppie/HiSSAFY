@@ -8,7 +8,12 @@
     </header>
     <div class="screens text-center">
       <video autoplay="true">No video support in your browser</video>
-      <div class="imgs">
+      <div class="chk-face">
+        <div class="btns">
+          <p class="describe text-center mt-5">본인 얼굴이 맞나요?</p>
+          <v-btn class="yes" to="/student/completed_enroll" color="blue darken-1 mr-5" large>예</v-btn>
+          <v-btn class="no" onclick="" color="deep-orange ml-5" large>아니오</v-btn>
+        </div>
         <img class="mt-5" src="">
         <canvas style="display:none;" width="640" height="480" />
       </div>
@@ -59,7 +64,7 @@ export default {
     },
     check () {
       if (confirm('본인이 맞습니까?')) {
-        this.$router.push('/completed_enroll')
+        location.to = '/completed_enroll'
       }
     }
   }
@@ -76,11 +81,12 @@ export default {
 
 <style>
 .titles {
-  font-size: 100px;
+  font-size: 100pt;
   color: #ffffff;
 }
+
 .describe {
-  font-size: 60px;
+  font-size: 60pt;
   color: #ffffff;
 }
 </style>

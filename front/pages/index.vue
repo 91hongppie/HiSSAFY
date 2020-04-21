@@ -14,8 +14,8 @@
       </v-btn>
     </div>
     <div class="std-btn text-center">
-      <v-btn to="/student/check" color="purple">체크하기</v-btn>
-      <v-btn to="/student/enroll" color="pink">얼굴 등록하기</v-btn>
+      <v-btn to="/student/check" color="purple" large>체크하기</v-btn>
+      <v-btn to="/student/enroll" color="pink" large>얼굴 등록하기</v-btn>
     </div>
   </div>
 </template>
@@ -62,19 +62,19 @@ export default {
 }
 
 .clock {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    color: #706c61;
-    font-size: 100px;
-    font-family: 'Helvetica';
-    /* letter-spacing: 3px; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  color: #706c61;
+  font-size: 80pt;
+  font-family: 'Helvetica';
+  /* letter-spacing: 3px; */
 }
 
 .name {
   color: #ffffff;
-  font-size: 100px;
+  font-size: 100pt;
   font-family: 'Helvetica';
 }
 
