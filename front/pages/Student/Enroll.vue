@@ -77,8 +77,10 @@ export default {
 <style>
 .titles {
   font-size: 100px;
+  color: #ffffff;
 }
 .describe {
   font-size: 60px;
+  color: #ffffff;
 }
 </style>

@@ -5,8 +5,10 @@
         <span class="colored">HI</span> SSAFY!
       </h1>
     </header>
-    <div id="ClockDisplay" class="clock" onload="showTime()"></div>
-    <div class="admin-btn text-center mt-5 mb-5">
+    <div>
+      <p id="ClockDisplay" class="clock" onload="showTime()" />
+    </div>
+    <div class="admin-btn text-center">
       <v-btn class="justify-center" color="warning" to="/main">
         Admin Page
       </v-btn>

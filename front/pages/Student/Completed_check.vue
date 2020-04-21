@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2 class="text-center">
+    <h2 class="msg text-center">
       확인이 완료되었습니다.
     </h2>
   </div>
@@ -12,6 +12,8 @@ export default {
 }
 </script>
 
-<style >
-
+<style>
+.msg {
+  color: #ffffff;
+}
 </style>
