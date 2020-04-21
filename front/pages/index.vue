@@ -1,15 +1,20 @@
 <template>
-  <div>
+  <div id="app" class="blue">
     <header class="mt-5">
       <h1 class="name text-center">
         <span class="colored">HI</span> SSAFY!
       </h1>
     </header>
-    <div>
-      <p id="ClockDisplay" class="clock" onload="showTime()" />
+    <div id="ClockDisplay" class="clock" onload="showTime()"></div>
+    <div class="admin-btn text-center mt-5 mb-5">
+      <v-btn class="justify-center" color="warning" to="/main">
+        Admin Page
+      </v-btn>
     </div>
+    <div class="std-btn text-center">
       <v-btn to="/student/check" color="purple">체크하기</v-btn>
       <v-btn to="/student/enroll" color="pink">얼굴 등록하기</v-btn>
+    </div>
   </div>
 </template>
 

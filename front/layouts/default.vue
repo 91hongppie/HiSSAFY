@@ -1,13 +1,7 @@
 <template>
-  <div id="app">
-    <v-app>
-      <v-container>
-       <v-layout align-center>
-          <nuxt />
-        </v-layout>
-      </v-container>
-    </v-app>
-  </div>
+  <v-app>
+    <nuxt />
+  </v-app>
 </template>
 
 <style>
