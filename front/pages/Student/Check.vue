@@ -1,9 +1,18 @@
 <template>
-  <div class="container">
-    <h1 class="text-center">체크하기</h1>
-    <video autoplay="true">No video support in your browser</video>
-    <img src="">
-    <canvas style="display:none;" width="640" height="480"></canvas>
+  <div>
+    <header>
+      <h1 class="titles text-center">
+        체크하기
+      </h1>
+      <p class="describe text-center">얼굴을 중앙에 두고 터치합니다.</p>
+    </header>
+    <div class="screens text-center">
+      <video autoplay="true">No video support in your browser</video>
+      <div class="imgs">
+        <img src="">
+        <canvas style="display:none;" width="640" height="480" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -52,3 +61,15 @@ export default {
   }
 }
 </script>
+
+<style>
+.titles {
+  font-size: 100px;
+  color: #ffffff;
+}
+
+.describe{
+  font-size: 60px;
+  color: #ffffff;
+}
+</style>
