@@ -18,12 +18,12 @@ from numpy import genfromtxt
 import face_recognition as fr
 import json
 from json import JSONEncoder
-
 # import pandas as pd
 import csv
 import ast
 
 
+# Create your views here.
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
@@ -31,7 +31,6 @@ class NumpyArrayEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
-# Create your views here.
 def test(request):
     user = User.objects.all()
     context = {'user': user}
