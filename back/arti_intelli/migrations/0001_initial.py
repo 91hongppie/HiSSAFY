@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField(auto_now_add=True)),
-                ('in_time', models.TimeField(auto_now=True)),
+                ('in_time', models.TimeField(auto_now=True, null=True)),
                 ('out_time', models.TimeField(blank=True, null=True)),
                 ('is_late', models.BooleanField(default=False)),
                 ('is_early_left', models.BooleanField(default=False)),

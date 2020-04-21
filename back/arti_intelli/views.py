@@ -7,7 +7,8 @@ from .serializers import CampusSerializer, AccountSerializer, CheckSerializer
 from rest_framework.decorators import api_view, permission_classes, authentication_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-import datetime
+from datetime import datetime, date, time
+from django.db.models import Count
 from rest_framework.parsers import MultiPartParser, FileUploadParser
 from matplotlib import pyplot as plt
 from PIL import Image
@@ -17,12 +18,12 @@ from numpy import genfromtxt
 import face_recognition as fr
 import json
 from json import JSONEncoder
-
 # import pandas as pd
 import csv
 import ast
 
 
+# Create your views here.
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
@@ -30,7 +31,6 @@ class NumpyArrayEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
-# Create your views here.
 def test(request):
     user = User.objects.all()
     context = {'user': user}
@@ -184,43 +184,98 @@ def check_on(request):
 
 
 @api_view(['GET'])
-def check_on_region(request, pk):
+def check_on_month(request, pk1, pk2, pk3):
     """
-        지역별 교육생 출결사항 목록
+        당월 교육생 출결사항 목록 (stage, region, classes)
     """
-    checks = Check.objects.filter(student_info__region=pk).select_related('student_info')
+    checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, student_info__stage=pk1, 
+        student_info__region=pk2, student_info__classes=pk3).select_related('student_info').order_by('date', 'student_info__name')
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 
 
 @api_view(['GET'])
-def not_inclick(request, pk):
+def check_on_daily(request, pk1, pk2, pk3):
     """
-        지역별 입실 미클릭 교육생 목록
+        Daily 교육생 출결사항 목록 (stage, region, classes)
     """
-    checks = Check.objects.filter(student_info__region=pk, in_time__isnull=True)
+    checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, 
+        student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3).select_related('student_info').order_by('student_info__name')
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 
 
 @api_view(['GET'])
-def not_outclick(request, pk):
+def not_inclick(request, pk1, pk2, pk3):
     """
-        지역별 퇴실 미클릭 교육생 목록
+        Daily 입실 미클릭 교육생 목록 (stage, region, classes)
     """
-    checks = Check.objects.filter(student_info__region=pk, out_time__isnull=True)
+    checks = Check.objects.filter(student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=True, date=date.today())
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 
 
 @api_view(['GET'])
-def not_allclick(request):
+def not_outclick(request, pk1, pk2, pk3):
     """
-        결석 교육생 목록
+        Daily 퇴실 미클릭 교육생 목록 (stage, region, classes)
     """
-    checks = Check.objects.filter(in_time__isnull=True, out_time__isnull=True)
+    checks = Check.objects.filter(student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, out_time__isnull=True, date=date.today())
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
+
+
+@api_view(['GET'])
+def not_allclick(request, pk1, pk2, pk3):
+    """
+        Daily 결석 교육생 목록 (stage, region, classes)
+    """
+    checks = Check.objects.filter(student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=True, out_time__isnull=True, date=date.today())
+    serializers = CheckSerializer(checks, many=True)
+    return Response(serializers.data)
+
+
+@api_view(['GET'])
+def classes_attendance(request, pk1, pk2, pk3):
+    """
+        당월 반별 출결현황 (stage, region, classes)
+    """
+    data = []
+    for day in range(1, 32):
+        total_persons = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=day,
+            student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3).aggregate(Count('id'))['id__count']
+        attend_persons = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=day,
+            student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=False).aggregate(Count('id'))['id__count']
+        if total_persons != 0:
+            days = {
+                'day': day,
+                'total_persons': total_persons,
+                'attend_persons': attend_persons
+            }
+            data.append(days)    
+    return Response(data)
+
+
+@api_view(['GET'])
+def student_attendance(request, pk1, pk2, pk3):
+    """
+        월별 개인 출결현황 (year, month, student_id)
+    """
+    checks = Check.objects.filter(date__year=pk1, date__month=pk2, student_info__student_id=pk3)
+    attend_day = checks.filter(in_time__isnull=False).aggregate(Count('id'))['id__count']
+    come_late_cnt = checks.filter(in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
+    early_left_cnt = checks.filter(out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
+    total_day = checks.aggregate(Count('id'))['id__count']
+    not_attend_day = checks.filter(in_time__isnull=True, out_time__isnull=True).aggregate(Count('id'))['id__count']
+    attendance_rate = ((total_day - not_attend_day) / total_day) * 100
+    data = {
+        'attend_day': attend_day,
+        'come_late_cnt': come_late_cnt,
+        'early_left_cnt': early_left_cnt,
+        'not_attend_day': not_attend_day,
+        'attendance_rate': attendance_rate
+    }
+    return Response(data)
 
 
 @api_view(['PATCH'])
