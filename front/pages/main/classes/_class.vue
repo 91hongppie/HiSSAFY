@@ -10,16 +10,14 @@
 <script>
 export default {
   layout: 'admin',
-  asyncData () {
+  asyncData ({ params }) {
     const lineData = {
-      labels: ['4월 1일', '4월 2일', '4월 3일'],
+      labels: ['4월 1일', '4월 2일', '4월 3일', '4월 4일'],
       datasets: [{
-        label: '출석 현황',
-        data: [100.0, 100.0, 98.0],
+        label: '출석률',
+        data: [100.0, 100.0, 98.0, 100.0],
         borderColor: [
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 99, 132, 1)',
-          'rgba(120, 200, 132, 1)'
+          'rgba(54, 162, 235, 1)'
         ],
         fill: false,
         borderCapStyle: 'round'
@@ -36,20 +34,25 @@ export default {
         }]
       }
     } // some options
-    return { lineData, options }
+    return { lineData, options, classNumber: params.class }
   },
   data () {
     return {
       showLine: false,
-      className: '대전 1반'
+      locations: ['서울', '대전', '광주', '구미'],
+      className: ''
     }
   },
   mounted () {
     this.showLine = true
+    const tmp = this.classNumber.split('n')
+    this.className = `${tmp[0]}기 ${this.locations[tmp[1]]} ${tmp[2]}반`
   }
 }
 </script>
 
-<style>
-
+<style scoped>
+div {
+  padding: 10px;
+}
 </style>

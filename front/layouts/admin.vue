@@ -5,7 +5,7 @@
         <v-btn to="/" text class="title white--text"><span class="ssafy-blue">HI</span>SSAFY</v-btn>
         <span class="menu">
           <v-btn to="/main" text class="menu-button white--text">대시보드</v-btn>
-          <v-btn to="/main/class" text class="menu-button white--text">반별 현황</v-btn>
+          <v-btn to="/main/classes" text class="menu-button white--text">반별 현황</v-btn>
           <v-btn text class="menu-button white--text">MENU</v-btn>
         </span>
         <span class="menu2">
@@ -14,7 +14,7 @@
         </span>
       </nav>
       <section>
-        <nuxt class="nBody" />
+        <nuxt />
       </section>
     </div>
   </v-app>
@@ -26,7 +26,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 html, body, div {
   width: 100%; height: 100%;
 }
@@ -43,14 +43,12 @@ nav {
   justify-content: space-around;
 }
 section {
+  margin-left: 20%;
   width: 100%; height: 100%;
   display: inline-block;
 }
 .navbar {
   display: flex;
-}
-.nBody {
-  margin-left: 20%;
 }
 .ssafy-blue {
   color: #3396F4;

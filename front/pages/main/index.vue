@@ -1,9 +1,8 @@
 <template>
-  <div class="classInfo">
+  <div>
     <div v-for="num in nums" :key="num" class="px-3 d-flex flex-column">
       <div>
-        <v-btn to="/main/dj1st" text x-large><h3>대전 1반</h3> <v-chip outlined>2기</v-chip></v-btn>
-        <v-btn class="white--text" x-small color="pink">알림</v-btn>
+        <v-btn :to="'/main/classes/' + num.stage + 'n' + num.location + 'n' + num.class" text x-large><h3>{{locations[num.location]}} {{num.class}}반</h3></v-btn><v-chip :color="stage[num.stage - 1]" small>{{num.stage}}기</v-chip>
       </div>
       <div class="class-box">
         <client-only>
@@ -46,7 +45,26 @@ export default {
     return {
       showLine: false,
       members: ['길현', '규홍', '현호', '선행'],
-      nums: [1, 2, 3]
+      locations: ['서울', '대전', '광주', '구미'],
+      nums: [
+        {
+          stage: 2,
+          location: 2,
+          class: 1
+        },
+        {
+          stage: 3,
+          location: 1,
+          class: 4
+        },
+        {
+          stage: 2,
+          location: 3,
+          class: 2
+        }
+
+      ],
+      stage: ['success', 'warning', 'info']
     }
   },
   mounted () {
@@ -55,11 +73,7 @@ export default {
 }
 </script>
 
-<style>
-.classInfo {
-  padding: 10px;
-  height: 50%;
-}
+<style scoped>
 .class-box {
   display: flex;
   margin-right: 10px;
