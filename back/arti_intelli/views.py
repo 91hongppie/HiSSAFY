@@ -49,16 +49,18 @@ class Recognition(APIView):
         image_face = image[top:bottom, left:right]
         unknown_face = fr.face_encodings(image_face)
         dis = 1
+        count = 0
         with open('accounts_대전.json') as accounts:
             datas = json.load(accounts)
         for student_id, data in datas.items():
             for dt in data:
+                count += 1
                 dt = [np.asarray(dt)]
                 distance = fr.face_distance(dt, unknown_face[0])
-                print(student_id)
                 if distance < dis and distance < 0.5:
                     dis = distance
                     account_student_id = student_id
+        print(count)
         accounts = Account.objects.filter(student_id=account_student_id)
         serializer = AccountSerializer(accounts[0])
         return Response(serializer.data)
@@ -74,19 +76,23 @@ class AddAccount(APIView):
         top, right, bottom, left = fr.face_locations(known_image)[0]
         known_image_face = known_image[top:bottom, left:right]
         known_face = fr.face_encodings(known_image_face)
-        print(known_face)
         info = request.data
         json_data = {}
         encodedNumpyData = json.dumps(json_data, cls=NumpyArrayEncoder)
         region_name = info.get('region')
         region = Campus.objects.filter(campus=region_name)[0]
-        with open(f'accounts_{region_name}.json') as accounts:
-            data = json.load(accounts)
-        if info.get('student_id') in data:
-            data[info.get('student_id')].append(known_face[0].tolist())
-        else:
+        try:
+            with open(f'accounts_{region_name}.json') as accounts:
+                data = json.load(accounts)
+            if info.get('student_id') in data:
+                data[info.get('student_id')].append(known_face[0].tolist())
+            else:
+                data[info.get('student_id')] = [known_face[0].tolist()]
+        except:
+            data = {}
             data[info.get('student_id')] = [known_face[0].tolist()]
-        with open(f'accounts_{region_name}.json', 'w', encoding="utf-8") as accounts:
+
+        with open(f'accounts_{region_name}.json', 'w', encoding='utf-8') as accounts:
             json.dump(data, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
         data = {
             'pic_name': image_name,
@@ -100,7 +106,40 @@ class AddAccount(APIView):
         serializer = AccountSerializer(data=data)
         if serializer.is_valid():
             account = serializer.save()
-        return Response(serializer.data)
+        data = serializer.data
+        data['face_encodings'] = [known_face[0].tolist()]
+        return Response(data)
+
+
+@api_view(['POST', ])
+def add_data(request):
+    """
+        본인인증 후 데이터 추가
+    """
+    region_id = request.data.get('region')
+    student_id = request.data.get('student_id')
+    face_encodings = request.data.get('face_encodings')
+    region_name = Campus.objects.filter(id=region_id)
+    campus = region_name.get('campus')
+    with open(f'accounts_{campus}.json') as accounts:
+        data = json.load(accounts)
+    data[student_id].append(face_encodings)
+    return Response(request.data)
+
+
+
+@api_view(['POST', ])
+def add_campus(request):
+    """
+        캠퍼스 추가
+    """
+    data = {
+        'campus': request.data.get('campus')
+    }
+    serializer = CampusSerializer(data=data)
+    if serializer.is_valid():
+        campus = serializer.save()
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -133,14 +172,15 @@ def account_list_region(request, pk1, pk2):
     return Response(serializers.data)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def check_on(request):
     """
-        전체 교육생 출결사항 목록
+        이번달 반별 교육생 출결사항 목록
     """
-    checks = Check.objects.all()
-    serializers = CheckSerializer(checks, many=True)
-    return Response(serializers.data)
+    campus = request.data.get('campus')
+    classes = request.data.get('classes')
+    stage = request.data.get('stage')
+    
 
 
 @api_view(['GET'])
