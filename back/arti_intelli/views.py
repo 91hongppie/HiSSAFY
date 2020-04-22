@@ -21,7 +21,6 @@ from json import JSONEncoder
 # import pandas as pd
 import csv
 import ast
-import cv2
 
 
 # Create your views here.
@@ -30,7 +29,6 @@ class NumpyArrayEncoder(JSONEncoder):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return JSONEncoder.default(self, obj)
-
 
 
 class Recognition(APIView):
@@ -109,7 +107,6 @@ class AddAccount(APIView):
         data = serializer.data
         data['face_encodings'] = [known_face[0].tolist()]
         return Response(data)
-
 
 
 @api_view(['POST', ])
@@ -194,23 +191,23 @@ def check_on_month(request, pk1, pk2, pk3):
 
 
 @api_view(['GET'])
+def check_on_daily_on_campus(request, pk1):
+    """
+        지역별 일일 교육생 출결정보 목록 (region)
+    """
+    checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, 
+        student_info__region=pk1).select_related('student_info').order_by('student_info__name')
+    serializers = CheckSerializer(checks, many=True)
+    return Response(serializers.data)
+
+
+@api_view(['GET'])
 def check_on_daily(request, pk1, pk2, pk3):
     """
         일일 교육생 출결정보 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, 
         student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3).select_related('student_info').order_by('student_info__name')
-    serializers = CheckSerializer(checks, many=True)
-    return Response(serializers.data)
-
-
-@api_view(['GET'])
-def check_on_daily_on_campus(request, pk1):
-    """
-        지역별 Daily 교육생 출결사항 목록 (region)
-    """
-    checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, 
-        student_info__region=pk1).select_related('student_info').order_by('student_info__name')
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 
