@@ -68,6 +68,9 @@ class AddAccount(APIView):
         사용자계정 추가
     """
     def post(self, request):
+        student_id = request.data.get('student_id')
+        if Account.objects.filter(student_id=student_id):
+            return 
         image_name = request.FILES['pic_name']
         known_image = fr.load_image_file(image_name)
         top, right, bottom, left = fr.face_locations(known_image)[0]
@@ -108,6 +111,7 @@ class AddAccount(APIView):
         return Response(data)
 
 
+
 @api_view(['POST', ])
 def add_data(request):
     """
@@ -122,7 +126,6 @@ def add_data(request):
         data = json.load(accounts)
     data[student_id].append(face_encodings)
     return Response(request.data)
-
 
 
 @api_view(['POST', ])
@@ -169,21 +172,20 @@ def account_list_region(request, pk1, pk2):
     return Response(serializers.data)
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def check_on(request):
     """
-        이번달 반별 교육생 출결사항 목록
+        전체 교육생 출결정보 목록
     """
-    campus = request.data.get('campus')
-    classes = request.data.get('classes')
-    stage = request.data.get('stage')
-    
+    checks = Check.objects.all()
+    serializers = CheckSerializer(checks, many=True)
+    return Response(serializers.data)
 
 
 @api_view(['GET'])
 def check_on_month(request, pk1, pk2, pk3):
     """
-        당월 교육생 출결사항 목록 (stage, region, classes)
+        당월 교육생 출결정보 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, student_info__stage=pk1, 
         student_info__region=pk2, student_info__classes=pk3).select_related('student_info').order_by('date', 'student_info__name')
@@ -194,7 +196,7 @@ def check_on_month(request, pk1, pk2, pk3):
 @api_view(['GET'])
 def check_on_daily(request, pk1, pk2, pk3):
     """
-        Daily 교육생 출결사항 목록 (stage, region, classes)
+        일일 교육생 출결정보 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, 
         student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3).select_related('student_info').order_by('student_info__name')
@@ -216,7 +218,7 @@ def check_on_daily_on_campus(request, pk1):
 @api_view(['GET'])
 def not_inclick(request, pk1, pk2, pk3):
     """
-        Daily 입실 미클릭 교육생 목록 (stage, region, classes)
+        일일 입실 미클릭 교육생 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=True, date=date.today())
     serializers = CheckSerializer(checks, many=True)
@@ -226,7 +228,7 @@ def not_inclick(request, pk1, pk2, pk3):
 @api_view(['GET'])
 def not_outclick(request, pk1, pk2, pk3):
     """
-        Daily 퇴실 미클릭 교육생 목록 (stage, region, classes)
+        일일 퇴실 미클릭 교육생 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, out_time__isnull=True, date=date.today())
     serializers = CheckSerializer(checks, many=True)
@@ -236,7 +238,7 @@ def not_outclick(request, pk1, pk2, pk3):
 @api_view(['GET'])
 def not_allclick(request, pk1, pk2, pk3):
     """
-        Daily 결석 교육생 목록 (stage, region, classes)
+        일일 결석 교육생 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=True, out_time__isnull=True, date=date.today())
     serializers = CheckSerializer(checks, many=True)
@@ -270,25 +272,34 @@ def student_attendance(request, pk1, pk2, pk3):
         월별 개인 출결현황 (year, month, student_id)
     """
     checks = Check.objects.filter(date__year=pk1, date__month=pk2, student_info__student_id=pk3)
+    class_days = checks.aggregate(Count('id'))['id__count']
     attend_day = checks.filter(in_time__isnull=False).aggregate(Count('id'))['id__count']
+    normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']
     come_late_cnt = checks.filter(in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
     early_left_cnt = checks.filter(out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
-    total_day = checks.aggregate(Count('id'))['id__count']
     not_attend_day = checks.filter(in_time__isnull=True, out_time__isnull=True).aggregate(Count('id'))['id__count']
-    attendance_rate = ((total_day - not_attend_day) / total_day) * 100
+    Disallow_absent_day = checks.filter(in_time__isnull=True, out_time__isnull=True, status=1).aggregate(Count('id'))['id__count']
+    allow_absent_day = checks.filter(in_time__isnull=True, out_time__isnull=True, status=2).aggregate(Count('id'))['id__count']
+    public_vacation_day = checks.filter(in_time__isnull=True, out_time__isnull=True, status=3).aggregate(Count('id'))['id__count']
+    attendance_rate = ((class_days - not_attend_day) / class_days) * 100
+    education_costs = ((class_days - Disallow_absent_day) / class_days) * 1000000
     data = {
+        'class_days': class_days,
         'attend_day': attend_day,
+        'normal_attend_day': normal_attend_day,
         'come_late_cnt': come_late_cnt,
         'early_left_cnt': early_left_cnt,
         'not_attend_day': not_attend_day,
-        'attendance_rate': attendance_rate
+        'public_vacation_day': public_vacation_day,
+        'allow_absent_day': allow_absent_day,
+        'Disallow_absent_day': Disallow_absent_day,
+        'attendance_rate': attendance_rate,
+        'education_costs': education_costs
     }
     return Response(data)
 
 
 @api_view(['PATCH'])
-# @permission_classes([IsAuthenticated])
-# @authentication_classes([JSONWebTokenAuthentication])
 def in_calling(request):
     """
         입실 클릭
@@ -302,8 +313,6 @@ def in_calling(request):
 
 
 @api_view(['PATCH'])
-# @permission_classes([IsAuthenticated])
-# @authentication_classes([JSONWebTokenAuthentication])
 def out_calling(request):
     """
         퇴실 클릭
