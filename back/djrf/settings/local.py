@@ -36,3 +36,6 @@ DATABASES = {
         'PORT': '3306'
     }
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
+

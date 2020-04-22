@@ -5,9 +5,8 @@
 </template>
 
 <style>
-/* html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+html {
+  font-family: 'Helvetica';
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
@@ -16,7 +15,7 @@
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
 }
-
+/* 
 *,
 *:before,
 *:after {

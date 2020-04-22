@@ -1,8 +1,19 @@
 <template>
   <div>
+    <div style="float: right;">
+      <v-chip>서울</v-chip>
+      <v-chip>대전</v-chip>
+      <v-chip>광주</v-chip>
+      <v-chip>구미</v-chip>
+    </div>
     <div v-for="num in nums" :key="num" class="px-3 d-flex flex-column">
       <div>
-        <v-btn :to="'/main/classes/' + num.stage + 'n' + num.location + 'n' + num.class" text x-large><h3>{{locations[num.location]}} {{num.class}}반</h3></v-btn><v-chip :color="stage[num.stage - 1]" small>{{num.stage}}기</v-chip>
+        <v-btn :to="'/main/classes/' + num.stage + 'n' + num.location + 'n' + num.class" text x-large>
+          <h3>{{ locations[num.location] }} {{ num.class }}반</h3>
+        </v-btn>
+        <v-chip :color="stage[num.stage - 1]" small>
+          {{ num.stage }}기
+        </v-chip>
       </div>
       <div class="class-box">
         <client-only>
@@ -10,7 +21,7 @@
         </client-only>
         <div class="text-center">
           <h3>출석 안 한 사람</h3>
-          <p><span v-for="member in members" :key="member">{{member}} </span></p>
+          <p>{{ daily }}</p>
         </div>
       </div>
     </div>
@@ -18,10 +29,9 @@
 </template>
 
 <script>
-
 export default {
   layout: 'admin',
-  asyncData () {
+  async asyncData ({ $axios }) {
     const lineData = {
       labels: ['출석', '미출석'],
       datasets: [{
@@ -39,7 +49,8 @@ export default {
         position: 'bottom'
       }
     } // some options
-    return { lineData, options }
+    const daily = await $axios.$get('/api/checks/')
+    return { lineData, options, daily }
   },
   data () {
     return {
@@ -62,13 +73,18 @@ export default {
           location: 3,
           class: 2
         }
-
       ],
-      stage: ['success', 'warning', 'info']
+      stage: ['success', 'warning', 'info'],
+      default_campus: 1
     }
   },
   mounted () {
     this.showLine = true // showLine will only be set to true on the client. This keeps the DOM-tree in sync.
+  },
+  methods: {
+    setCampus (v) {
+      this.default_campus = v
+    }
   }
 }
 </script>

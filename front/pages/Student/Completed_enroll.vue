@@ -11,9 +11,6 @@
 
 <script>
 export default {
-  created () {
-    this.move()
-  },
   method: {
     move () {
       this.$routes.push('/')
@@ -23,7 +20,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .msg {
   font-size: 60pt;
   color: #ffffff;

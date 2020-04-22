@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>{{className}}</h1>
+    <h1>{{ className }}</h1>
     <client-only>
       <my-line v-if="showLine" :data="lineData" :options="options" style="display: inline-block; width: 700px; height: 200px;" />
     </client-only>
