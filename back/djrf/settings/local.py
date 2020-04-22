@@ -29,10 +29,13 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hissafy',
-        'USER': 'user',
-        'PASSWORD': 'adsf1324!',
-        'HOST': '127.0.0.1',
+        'NAME': 'ai',
+        'USER': 'root',
+        'PASSWORD': 'dudnquf@102',
+        'HOST': 'localhost',
         'PORT': '3306'
     }
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
+
