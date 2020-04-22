@@ -1,13 +1,12 @@
 <template>
-  <div>
+  <v-app>
     <nuxt />
-  </div>
+  </v-app>
 </template>
 
 <style>
 html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Helvetica';
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
@@ -16,7 +15,7 @@ html {
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
 }
-
+/* 
 *,
 *:before,
 *:after {
@@ -51,5 +50,5 @@ html {
 .button--grey:hover {
   color: #fff;
   background-color: #35495e;
-}
+} */
 </style>
