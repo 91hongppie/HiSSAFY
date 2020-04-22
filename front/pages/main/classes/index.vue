@@ -4,33 +4,33 @@
       <v-row>
         <v-col cols="3">
           <v-select
-            :items="loca"
             v-model="selectedLoca"
+            :items="loca"
             label="지역"
             outlined
             dense
-          ></v-select>
+          />
         </v-col>
         <v-col cols="3">
           <v-select
-            :items="stag"
             v-model="selectedStag"
+            :items="stag"
             label="기수"
             outlined
             dense
-          ></v-select>
+          />
         </v-col>
         <v-col cols="3">
           <v-select
-            :items="clas"
             v-model="selectedClas"
+            :items="clas"
             label="반"
             outlined
             dense
-          ></v-select>
+          />
         </v-col>
         <v-col>
-          <v-btn @click="searchClass" :to="'/main/classes/' + selectedStag + 'n' + selectedLoca + 'n' + selectedClas">
+          <v-btn :to="'/main/classes/' + selectedStag + 'n' + selectedLoca + 'n' + selectedClas" @click="searchClass">
             검색
           </v-btn>
         </v-col>

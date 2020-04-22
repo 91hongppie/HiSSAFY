@@ -56,7 +56,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .clock {
   position: relative;
   /* top: 50%;
