@@ -21,6 +21,7 @@ from json import JSONEncoder
 # import pandas as pd
 import csv
 import ast
+import cv2
 
 
 # Create your views here.
@@ -31,12 +32,6 @@ class NumpyArrayEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
-def test(request):
-    user = User.objects.all()
-    context = {'user': user}
-    print(user[0].password)
-    return render(request, 'arti_intelli/test.html', context)
-
 
 class Recognition(APIView):
     """
@@ -44,13 +39,14 @@ class Recognition(APIView):
     """
     def post(self, request):
         image = request.FILES['pic_name']
-        image = fr.load_image_file(image)
-        top, right, bottom, left = fr.face_locations(image)[0]
-        image_face = image[top:bottom, left:right]
+        image1 = fr.load_image_file(image)
+        top, right, bottom, left = fr.face_locations(image1)[0]
+        image_face = image1[top:bottom, left:right]
         unknown_face = fr.face_encodings(image_face)
         dis = 1
         count = 0
-        with open('accounts_대전.json') as accounts:
+        region_name = request.data.get('region')
+        with open(f'data/accounts_{region_name}.json') as accounts:
             datas = json.load(accounts)
         for student_id, data in datas.items():
             for dt in data:
@@ -58,10 +54,11 @@ class Recognition(APIView):
                 dt = [np.asarray(dt)]
                 distance = fr.face_distance(dt, unknown_face[0])
                 if distance < dis and distance < 0.5:
-                    dis = distance
-                    account_student_id = student_id
-        print(count)
+                    if not Check.objects.filter(student_info=student_id):
+                        dis = distance
+                        account_student_id = student_id
         accounts = Account.objects.filter(student_id=account_student_id)
+        student_id = accounts[0].student_id
         serializer = AccountSerializer(accounts[0])
         return Response(serializer.data)
 
@@ -82,7 +79,7 @@ class AddAccount(APIView):
         region_name = info.get('region')
         region = Campus.objects.filter(campus=region_name)[0]
         try:
-            with open(f'accounts_{region_name}.json') as accounts:
+            with open(f'data/accounts_{region_name}.json') as accounts:
                 data = json.load(accounts)
             if info.get('student_id') in data:
                 data[info.get('student_id')].append(known_face[0].tolist())
@@ -92,7 +89,7 @@ class AddAccount(APIView):
             data = {}
             data[info.get('student_id')] = [known_face[0].tolist()]
 
-        with open(f'accounts_{region_name}.json', 'w', encoding='utf-8') as accounts:
+        with open(f'data/accounts_{region_name}.json', 'w', encoding='utf-8') as accounts:
             json.dump(data, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
         data = {
             'pic_name': image_name,
@@ -121,7 +118,7 @@ def add_data(request):
     face_encodings = request.data.get('face_encodings')
     region_name = Campus.objects.filter(id=region_id)
     campus = region_name.get('campus')
-    with open(f'accounts_{campus}.json') as accounts:
+    with open(f'data/accounts_{campus}.json') as accounts:
         data = json.load(accounts)
     data[student_id].append(face_encodings)
     return Response(request.data)
@@ -201,6 +198,17 @@ def check_on_daily(request, pk1, pk2, pk3):
     """
     checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, 
         student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3).select_related('student_info').order_by('student_info__name')
+    serializers = CheckSerializer(checks, many=True)
+    return Response(serializers.data)
+
+
+@api_view(['GET'])
+def check_on_daily_on_campus(request, pk1):
+    """
+        지역별 Daily 교육생 출결사항 목록 (region)
+    """
+    checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, 
+        student_info__region=pk1).select_related('student_info').order_by('student_info__name')
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
 

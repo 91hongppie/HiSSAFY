@@ -29,9 +29,9 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hissafy',
-        'USER': 'user',
-        'PASSWORD': 'adsf1324!',
+        'NAME': 'ai',
+        'USER': 'root',
+        'PASSWORD': '1324adsf',
         'HOST': '127.0.0.1',
         'PORT': '3306'
     }
