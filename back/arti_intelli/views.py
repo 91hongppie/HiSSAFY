@@ -174,7 +174,7 @@ def account_list_region(request, pk1, pk2):
 @api_view(['GET'])
 def check_on(request):
     """
-        전체 교육생 출결사항 목록
+        전체 교육생 출결정보 목록
     """
     checks = Check.objects.all()
     serializers = CheckSerializer(checks, many=True)
@@ -184,7 +184,7 @@ def check_on(request):
 @api_view(['GET'])
 def check_on_month(request, pk1, pk2, pk3):
     """
-        당월 교육생 출결사항 목록 (stage, region, classes)
+        당월 교육생 출결정보 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, student_info__stage=pk1, 
         student_info__region=pk2, student_info__classes=pk3).select_related('student_info').order_by('date', 'student_info__name')
@@ -195,7 +195,7 @@ def check_on_month(request, pk1, pk2, pk3):
 @api_view(['GET'])
 def check_on_daily(request, pk1, pk2, pk3):
     """
-        Daily 교육생 출결사항 목록 (stage, region, classes)
+        일일 교육생 출결정보 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, 
         student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3).select_related('student_info').order_by('student_info__name')
@@ -206,7 +206,7 @@ def check_on_daily(request, pk1, pk2, pk3):
 @api_view(['GET'])
 def not_inclick(request, pk1, pk2, pk3):
     """
-        Daily 입실 미클릭 교육생 목록 (stage, region, classes)
+        일일 입실 미클릭 교육생 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=True, date=date.today())
     serializers = CheckSerializer(checks, many=True)
@@ -216,7 +216,7 @@ def not_inclick(request, pk1, pk2, pk3):
 @api_view(['GET'])
 def not_outclick(request, pk1, pk2, pk3):
     """
-        Daily 퇴실 미클릭 교육생 목록 (stage, region, classes)
+        일일 퇴실 미클릭 교육생 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, out_time__isnull=True, date=date.today())
     serializers = CheckSerializer(checks, many=True)
@@ -226,7 +226,7 @@ def not_outclick(request, pk1, pk2, pk3):
 @api_view(['GET'])
 def not_allclick(request, pk1, pk2, pk3):
     """
-        Daily 결석 교육생 목록 (stage, region, classes)
+        일일 결석 교육생 목록 (stage, region, classes)
     """
     checks = Check.objects.filter(student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=True, out_time__isnull=True, date=date.today())
     serializers = CheckSerializer(checks, many=True)
