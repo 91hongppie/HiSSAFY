@@ -260,18 +260,27 @@ def student_attendance(request, pk1, pk2, pk3):
         월별 개인 출결현황 (year, month, student_id)
     """
     checks = Check.objects.filter(date__year=pk1, date__month=pk2, student_info__student_id=pk3)
+    class_days = checks.aggregate(Count('id'))['id__count']
     attend_day = checks.filter(in_time__isnull=False).aggregate(Count('id'))['id__count']
+    normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']
     come_late_cnt = checks.filter(in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
     early_left_cnt = checks.filter(out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
-    total_day = checks.aggregate(Count('id'))['id__count']
     not_attend_day = checks.filter(in_time__isnull=True, out_time__isnull=True).aggregate(Count('id'))['id__count']
-    attendance_rate = ((total_day - not_attend_day) / total_day) * 100
-    education_costs = ((total_day - not_attend_day) / total_day)
+    Disallow_absent_day = checks.filter(in_time__isnull=True, out_time__isnull=True, status=1).aggregate(Count('id'))['id__count']
+    allow_absent_day = checks.filter(in_time__isnull=True, out_time__isnull=True, status=2).aggregate(Count('id'))['id__count']
+    public_vacation_day = checks.filter(in_time__isnull=True, out_time__isnull=True, status=3).aggregate(Count('id'))['id__count']
+    attendance_rate = ((class_days - not_attend_day) / class_days) * 100
+    education_costs = ((class_days - Disallow_absent_day) / class_days) * 1000000
     data = {
+        'class_days': class_days,
         'attend_day': attend_day,
+        'normal_attend_day': normal_attend_day,
         'come_late_cnt': come_late_cnt,
         'early_left_cnt': early_left_cnt,
         'not_attend_day': not_attend_day,
+        'public_vacation_day': public_vacation_day,
+        'allow_absent_day': allow_absent_day,
+        'Disallow_absent_day': Disallow_absent_day,
         'attendance_rate': attendance_rate,
         'education_costs': education_costs
     }
@@ -279,8 +288,6 @@ def student_attendance(request, pk1, pk2, pk3):
 
 
 @api_view(['PATCH'])
-# @permission_classes([IsAuthenticated])
-# @authentication_classes([JSONWebTokenAuthentication])
 def in_calling(request):
     """
         입실 클릭
@@ -294,8 +301,6 @@ def in_calling(request):
 
 
 @api_view(['PATCH'])
-# @permission_classes([IsAuthenticated])
-# @authentication_classes([JSONWebTokenAuthentication])
 def out_calling(request):
     """
         퇴실 클릭
