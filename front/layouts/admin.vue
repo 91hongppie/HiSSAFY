@@ -1,21 +1,23 @@
 <template>
-  <div>
-    <nav>
-      <a class="title"><span class="ssafy-blue">HI</span>SSAFY</a>
-      <span class="menu">
-        <a class="menu-button">MENU</a>
-        <a class="menu-button">MENU</a>
-        <a class="menu-button">MENU</a>
-      </span>
-      <span class="menu2">
-        <a class="menu-button">MENU</a>
-        <a class="menu-button">MENU</a>
-      </span>
-    </nav>
-    <section>
-      <nuxt />
-    </section>
-  </div>
+  <v-app>
+    <div class="navbar">
+      <nav>
+        <v-btn to="/" text class="title white--text"><span class="ssafy-blue">HI</span>SSAFY</v-btn>
+        <span class="menu">
+          <v-btn to="/main" text class="menu-button white--text">대시보드</v-btn>
+          <v-btn to="/main/classes" text class="menu-button white--text">반별 현황</v-btn>
+          <v-btn text class="menu-button white--text">MENU</v-btn>
+        </span>
+        <span class="menu2">
+          <v-btn text class="menu-button white--text">MENU</v-btn>
+          <v-btn text class="menu-button white--text">MENU</v-btn>
+        </span>
+      </nav>
+      <section>
+        <nuxt />
+      </section>
+    </div>
+  </v-app>
 </template>
 
 <script>
@@ -24,35 +26,34 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 html, body, div {
   width: 100%; height: 100%;
-}
-div {
-  display: flex;
 }
 nav {
   width: 20%; height: 100%;
   color: white;
   background: black;
 
+  position: fixed;
+  left: 0;
   display: flex;
   flex-direction: column;
   align-content: center;
   justify-content: space-around;
 }
 section {
-  width: 80%; height: 100%;
+  margin-left: 20%;
+  width: 100%; height: 100%;
   display: inline-block;
+}
+.navbar {
+  display: flex;
 }
 .ssafy-blue {
   color: #3396F4;
 }
 .menu {
-  text-align: right;
-  font-size: 30px;
-
-  margin-right: 10%;
   display: flex;
   flex-direction: column;
   align-content: center;
