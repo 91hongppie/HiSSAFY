@@ -1,86 +1,88 @@
 <template>
-  <div class="container">
-    <video autoplay="true">No video support in your browser</video>
-    <img src="">
-    <canvas style="display:none;" width="640" height="480"></canvas>
+  <div id="app" class="blue">
+    <header class="mt-5">
+      <h1 class="name text-center">
+        <span class="colored">HI</span> SSAFY!
+      </h1>
+    </header>
+    <div>
+      <p id="ClockDisplay" class="clock" onload="showTime()" />
+    </div>
+    <div class="admin-btn text-center">
+      <v-btn class="justify-center" color="warning" to="/main">
+        Admin Page
+      </v-btn>
+    </div>
+    <div class="std-btn text-center">
+      <v-btn to="/student/check" color="purple" large>체크하기</v-btn>
+      <v-btn to="/student/enroll" color="pink" large>얼굴 등록하기</v-btn>
+    </div>
   </div>
 </template>
 
 <script>
-
 export default {
-  beforeMount () {
-    this.getVideo()
+  mounted () {
+    this.showTime()
   },
+
   methods: {
-    getVideo () {
-      const constraints = { audio: false, video: true }
-      const video = document.querySelector('video')
-      const canvas = document.querySelector('canvas')
-      const context = canvas.getContext('2d')
-      let localMediaStream = null
+    showTime () {
+      const date = new Date()
+      let h = date.getHours() // 0 - 23
+      let m = date.getMinutes() // 0 - 59
+      let s = date.getSeconds() // 0 - 59
+      let session = 'AM'
 
-      function snapshot () {
-        if (localMediaStream) {
-          const image = document.querySelector('img')
-          context.drawImage(video, 0, 0, 640, 480)
-          image.src = canvas.toDataURL('image/png')
-        }
+      if (h === 0) {
+        h = 12
       }
-      video.addEventListener('click', snapshot, false)
 
-      navigator.mediaDevices.getUserMedia(constraints)
-        .then(function (stream) {
-          // Older browsers may not have srcObject
-          if ('srcObject' in video) {
-            video.srcObject = stream
-            localMediaStream = stream
-          } else {
-            // Avoid using this in new browsers, as it is going away.
-            video.src = window.URL.createObjectURL(stream)
-            localMediaStream = stream
-          }
-          video.onloadedmetadata = function (e) {
-            video.play()
-          }
-        })
-        .catch(function (err) {
-          alert(err.name + ': ' + err.message)
-        })
+      if (h > 12) {
+        h = h - 12
+        session = 'PM'
+      }
+
+      h = (h < 10) ? '0' + h : h
+      m = (m < 10) ? '0' + m : m
+      s = (s < 10) ? '0' + s : s
+
+      const time = h + ':' + m + ':' + s + ' ' + session
+      document.getElementById('ClockDisplay').textContent = time
+
+      setTimeout(this.showTime, 1000)
     }
   }
 }
 </script>
 
 <style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+#app, body {
+  background-color: #1b262c;
 }
 
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
+.clock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  color: #706c61;
+  font-size: 80pt;
+  font-family: 'Helvetica';
+  /* letter-spacing: 3px; */
 }
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
+.name {
+  color: #ffffff;
+  font-size: 100pt;
+  font-family: 'Helvetica';
 }
 
-.links {
-  padding-top: 15px;
+.colored {
+  color: #0f4c81;
+}
+
+.btns {
+  color: #e1f4f3;
 }
 </style>
