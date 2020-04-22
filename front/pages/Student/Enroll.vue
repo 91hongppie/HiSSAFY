@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container blue">
     <header>
       <h1 class="titles text-center mb-5">
         얼굴 등록하기
@@ -11,7 +11,7 @@
       <div class="chk-face">
         <div class="btns">
           <p class="describe text-center mt-5">본인 얼굴이 맞나요?</p>
-          <v-btn class="yes" to="/student/completed_enroll" color="blue darken-1 mr-5" large>예</v-btn>
+          <v-btn class="yes" to="/student/completed_enroll" color="success mr-5" large>예</v-btn>
           <v-btn class="no" onclick="" color="deep-orange ml-5" large>아니오</v-btn>
         </div>
         <img class="mt-5" src="">
@@ -79,7 +79,7 @@ export default {
 // }
 </script>
 
-<style>
+<style scoped>
 .titles {
   font-size: 100pt;
   color: #ffffff;

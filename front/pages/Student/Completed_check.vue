@@ -1,5 +1,5 @@
 <template>
-  <v-container class="container">
+  <v-container class="container blue">
     <h2 class="msg text-center">
       확인이 완료되었습니다.
     </h2>
@@ -11,11 +11,16 @@
 
 <script>
 export default {
-
+  methods: {
+    move () {
+      setTimeout(this.$router.push('/'), 1000)
+    }
+  }
 }
+
 </script>
 
-<style>
+<style scoped>
 .msg {
   font-size: 60pt;
   color: #ffffff;
