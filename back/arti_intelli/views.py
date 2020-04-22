@@ -127,7 +127,6 @@ def add_data(request):
     return Response(request.data)
 
 
-
 @api_view(['POST', ])
 def add_campus(request):
     """
@@ -172,15 +171,14 @@ def account_list_region(request, pk1, pk2):
     return Response(serializers.data)
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 def check_on(request):
     """
-        이번달 반별 교육생 출결사항 목록
+        전체 교육생 출결사항 목록
     """
-    campus = request.data.get('campus')
-    classes = request.data.get('classes')
-    stage = request.data.get('stage')
-    
+    checks = Check.objects.all()
+    serializers = CheckSerializer(checks, many=True)
+    return Response(serializers.data)
 
 
 @api_view(['GET'])
@@ -268,12 +266,14 @@ def student_attendance(request, pk1, pk2, pk3):
     total_day = checks.aggregate(Count('id'))['id__count']
     not_attend_day = checks.filter(in_time__isnull=True, out_time__isnull=True).aggregate(Count('id'))['id__count']
     attendance_rate = ((total_day - not_attend_day) / total_day) * 100
+    education_costs = ((total_day - not_attend_day) / total_day)
     data = {
         'attend_day': attend_day,
         'come_late_cnt': come_late_cnt,
         'early_left_cnt': early_left_cnt,
         'not_attend_day': not_attend_day,
-        'attendance_rate': attendance_rate
+        'attendance_rate': attendance_rate,
+        'education_costs': education_costs
     }
     return Response(data)
 
