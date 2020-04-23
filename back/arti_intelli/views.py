@@ -22,7 +22,6 @@ from json import JSONEncoder
 import csv
 import ast
 
-
 # Create your views here.
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
@@ -42,13 +41,11 @@ class Recognition(APIView):
         image_face = image1[top:bottom, left:right]
         unknown_face = fr.face_encodings(image_face)
         dis = 1
-        count = 0
         region_name = request.data.get('region')
         with open(f'data/accounts_{region_name}.json') as accounts:
             datas = json.load(accounts)
         for student_id, data in datas.items():
             for dt in data:
-                count += 1
                 dt = [np.asarray(dt)]
                 distance = fr.face_distance(dt, unknown_face[0])
                 if distance < dis and distance < 0.5:
@@ -58,7 +55,9 @@ class Recognition(APIView):
         accounts = Account.objects.filter(student_id=account_student_id)
         student_id = accounts[0].student_id
         serializer = AccountSerializer(accounts[0])
-        return Response(serializer.data)
+        data = serializer.data
+        data['face_encodings'] = unknown_face[0].tolist()
+        return Response(data)
 
 
 class AddAccount(APIView):
@@ -68,7 +67,7 @@ class AddAccount(APIView):
     def post(self, request):
         student_id = request.data.get('student_id')
         if Account.objects.filter(student_id=student_id):
-            return 
+            return Response('이미 등록된 사용자입니다.')
         image_name = request.FILES['pic_name']
         known_image = fr.load_image_file(image_name)
         top, right, bottom, left = fr.face_locations(known_image)[0]
@@ -104,9 +103,7 @@ class AddAccount(APIView):
         serializer = AccountSerializer(data=data)
         if serializer.is_valid():
             account = serializer.save()
-        data = serializer.data
-        data['face_encodings'] = [known_face[0].tolist()]
-        return Response(data)
+        return Response(serializer.data)
 
 
 @api_view(['POST', ])
@@ -118,9 +115,14 @@ def add_data(request):
     student_id = request.data.get('student_id')
     face_encodings = request.data.get('face_encodings')
     region_name = Campus.objects.filter(id=region_id)
-    campus = region_name.get('campus')
+    campus = region_name[0].campus
+    print(face_encodings)
+    print(campus)
     with open(f'data/accounts_{campus}.json') as accounts:
         data = json.load(accounts)
+    data[request.data.get('student_id')].append(face_encodings)
+    with open(f'data/accounts_{campus}.json', 'w', encoding='utf-8') as accounts:
+        json.dump(data, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
     data[student_id].append(face_encodings)
     return Response(request.data)
 
@@ -174,9 +176,27 @@ def check_on(request):
     """
         전체 교육생 출결정보 목록
     """
-    checks = Check.objects.all()
-    serializers = CheckSerializer(checks, many=True)
-    return Response(serializers.data)
+    campuss = Campus.objects.all()
+    accounts = Account.objects.all()
+    datas = {}
+    datas['location'] = []
+    for campus in campuss:
+        datas[campus.id] = {}
+        datas['location'].append(campus.campus)
+    for account in accounts:
+        if not datas[account.region.id].get(account.stage):
+            datas[account.region.id][account.stage] = {}
+            if not datas[account.region.id][account.stage].get(account.classes):
+                datas[account.region.id][account.stage][account.classes] = {'members': [], 'check': [], 'uncheck': []}
+        else:
+            if not datas[account.region.id][account.stage].get(account.classes):
+                datas[account.region.id][account.stage][account.classes] = {'check': [], 'uncheck': []}
+        if Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, student_info=account.id):
+            datas[account.region.id][account.stage][account.classes]['check'].append(account.name)
+        else:
+            datas[account.region.id][account.stage][account.classes]['uncheck'].append(account.name)
+        datas[account.region.id][account.stage][account.classes]['members'].append(account.name)
+    return Response(datas)
 
 
 @api_view(['GET'])
