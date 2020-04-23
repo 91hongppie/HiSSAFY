@@ -28,4 +28,5 @@ urlpatterns = [
     path('accounts/', views.account_list, name="accounts_list"),
     path('campus/', views.campus_list, name="campus_list"),
     path('docs/', schema_view),
+    path('adddata/', views.add_data, name="add_data"),
 ]

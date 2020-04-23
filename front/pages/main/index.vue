@@ -36,7 +36,7 @@ export default {
       labels: ['출석', '미출석'],
       datasets: [{
         label: '출석 현황',
-        data: [20, 14],
+        data: [20, 10],
         backgroundColor: [
           'rgba(54, 162, 235, 1)',
           'rgba(255, 99, 132, 1)'
@@ -48,7 +48,7 @@ export default {
         display: true,
         position: 'bottom'
       }
-    } // some options
+    }// some options
     const daily = await $axios.$get('/api/checks/')
     return { lineData, options, daily }
   },
