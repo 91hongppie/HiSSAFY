@@ -10,22 +10,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # use this when mysql is the basic db
-# DATABASES = { 
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'ai',
-#         'USER': 'root',
-#         'PASSWORD': '1324adsf',
-#         'HOST': 'localhost',
-#         'PORT': '',
-#         'OPTIONS': {
-#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-#             'charset': 'utf8mb4',
-#             'use_unicode': True,
-#         },
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -38,4 +22,3 @@ DATABASES = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
-
