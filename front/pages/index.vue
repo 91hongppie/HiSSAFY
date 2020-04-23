@@ -11,11 +11,11 @@
       </v-btn>
     </div>
     <div class="cloc text-center">
-      <p id="ClockDisplay" class="clock" onload="showTime()" />
+      <p id="ClockDisplay" class="clock" />
     </div>
     <div class="std-btn text-center">
-      <v-btn to="/student/check" color="purple" large>체크하기</v-btn>
-      <v-btn to="/student/enroll" color="pink" large>얼굴 등록하기</v-btn>
+      <v-btn to="/student/check" color="purple" class="mr-5 btn" large>체크하기</v-btn>
+      <v-btn to="/student/enroll" color="pink" class="ml-5 btn" large>얼굴 등록하기</v-btn>
     </div>
   </div>
 </template>
@@ -78,7 +78,11 @@ export default {
   color: #0f4c81;
 }
 
-.btns {
-  color: #e1f4f3;
+.btn {
+  width: 200px;
+  height: 100px;
+  font-size: 15pt;
+  font-family: 'Noto Sans CJK KR';
+  color: white;
 }
 </style>
