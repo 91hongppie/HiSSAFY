@@ -52,6 +52,10 @@ export default {
   mounted () {
     this.getVideo()
   },
+  beforeLeave (to, from, next) {
+    this.videoOff()
+    next()
+  },
   methods: {
     getVideo () {
       const constraints = { audio: false, video: true }
@@ -96,6 +100,13 @@ export default {
         .catch(function (err) {
           alert(err.name + ': ' + err.message)
         })
+    },
+    videoOff () {
+      const monitor = document.querySelector('video')
+      monitor.pause()
+      monitor.src = ''
+      // localstream.getTracks()[0].stop()
+      alert('Video off')
     },
     hideShow () {
       const btns = document.getElementById('btns')
