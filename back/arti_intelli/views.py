@@ -22,6 +22,7 @@ from json import JSONEncoder
 import csv
 import ast
 
+
 # Create your views here.
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
@@ -190,7 +191,7 @@ def check_on(request):
                 datas[account.region.id][account.stage][account.classes] = {'members': [], 'check': [], 'uncheck': []}
         else:
             if not datas[account.region.id][account.stage].get(account.classes):
-                datas[account.region.id][account.stage][account.classes] = {'check': [], 'uncheck': []}
+                datas[account.region.id][account.stage][account.classes] = {'members': [], 'check': [], 'uncheck': []}
         if Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, student_info=account.id):
             datas[account.region.id][account.stage][account.classes]['check'].append(account.name)
         else:
