@@ -2,15 +2,11 @@
   <v-app>
     <div class="navbar">
       <nav>
-        <v-btn to="/" text class="title white--text"><span class="ssafy-blue">HI</span>SSAFY</v-btn>
+        <v-btn to="/" text class="title white--text"><span class="display-2"><span class="ssafy-blue">HI</span>SSAFY</span></v-btn>
         <span class="menu">
-          <v-btn to="/main" text class="menu-button white--text">대시보드</v-btn>
-          <v-btn to="/main/classes" text class="menu-button white--text">반별 현황</v-btn>
-          <v-btn text class="menu-button white--text">MENU</v-btn>
-        </span>
-        <span class="menu2">
-          <v-btn text class="menu-button white--text">MENU</v-btn>
-          <v-btn text class="menu-button white--text">MENU</v-btn>
+          <v-btn to="/main" text class="menu-button white--text title">대시보드</v-btn>
+          <v-btn to="/main/classes" text class="menu-button white--text title">반별 현황</v-btn>
+          <v-btn to="/main/students" text class="menu-button white--text title">개인별 현황</v-btn>
         </span>
       </nav>
       <section>
@@ -29,6 +25,7 @@ export default {
 <style scoped>
 html, body, div {
   width: 100%; height: 100%;
+  background-color: white;
 }
 nav {
   width: 20%; height: 100%;
@@ -58,12 +55,6 @@ section {
   flex-direction: column;
   align-content: center;
   justify-content: center;
-}
-.menu2 {
-  font-size: 20px;
-
-  display: flex;
-  justify-content: space-around;
 }
 .menu-button {
   display: block;

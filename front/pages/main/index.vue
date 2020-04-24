@@ -1,16 +1,21 @@
 <template>
   <div>
-    <div style="float: right;">
-      <v-chip @click="setCampus(1)">서울</v-chip>
-      <v-chip @click="setCampus(2)">대전</v-chip>
-      <v-chip @click="setCampus(3)">광주</v-chip>
-      <v-chip @click="setCampus(4)">구미</v-chip>
+    <div class="locationSelect">
+      <v-chip
+        v-for="lo in locations.length"
+        :key="lo"
+        class="mt-3 mx-2"
+        :class="{ 'selectButton': default_campus[lo - 1], 'unSelectButton': !default_campus[lo - 1] }"
+        @click="setCampus(lo)"
+      >
+        {{ locations[lo - 1] }}
+      </v-chip>
     </div>
-    <div v-for="st in Object.keys(selectedData)" :key="`data-` + st" class="px-3 d-flex flex-column m-0">
+    <div v-for="st in Object.keys(selectedData)" :key="`data-` + st" class="px-3 d-flex flex-column mx-0 statNow">
       <!-- 기수 -->
       <div v-for="cl in Object.keys(selectedData[st])" :key="`${st}-${cl}`">
         <div>
-          <v-btn :to="'/main/classes/' + st + 'n' + default_campus + 'n' + cl" text x-large>
+          <v-btn :to="'/main/classes/' + st + 'n' + default_campus.indexOf(true) + 'n' + cl" text x-large>
             <h3>{{ locations[default_campus - 1] }} {{ cl }}반</h3>
           </v-btn>
           <v-chip :color="stage[st - 1]" small>
@@ -18,15 +23,14 @@
           </v-chip>
         </div>
         <!-- 차트 -->
-        <div class="class-box">
-          <client-only>
-            <my-doughnut
-              v-if="showLine"
-              :data="setChartData(selectedData[st][cl]['check'].length, selectedData[st][cl]['uncheck'].length)"
-              :options="options"
-              style="width: 300px; height: 300px; display: inline-block;"
-            />
-          </client-only>
+        <div class="classBox">
+          <my-doughnut
+            v-if="showLine"
+            :data="setChartData(selectedData[st][cl]['check'].length, selectedData[st][cl]['uncheck'].length)"
+            :options="options"
+            :location="default_campus.findIndex(isTrue) + 1"
+            style="width: 300px; height: 300px; display: inline-block;"
+          />
           <!-- 출석 안 한 사람 -->
           <div class="text-center">
             <h3>출석 안 한 사람 <v-chip dark small>{{ selectedData[st][cl]['uncheck'].length }}명</v-chip></h3>
@@ -43,11 +47,11 @@ export default {
   layout: 'admin',
   async asyncData ({ $axios }) {
     const daily = await $axios.$get('/api/checks/')
-    const lineData = {
+    const chartData = {
       labels: ['출석', '미출석'],
       datasets: [{
         label: '출석 현황',
-        data: [20, 10],
+        data: [14, 10],
         backgroundColor: [
           'rgba(54, 162, 235, 1)',
           'rgba(255, 99, 132, 1)'
@@ -60,7 +64,7 @@ export default {
         position: 'bottom'
       }
     } // some options
-    return { lineData, options, daily }
+    return { chartData, options, daily }
   },
   data () {
     return {
@@ -174,20 +178,26 @@ export default {
         }
       },
       stage: ['success', 'warning', 'info'],
-      default_campus: 1
+      default_campus: [true, false, false, false]
     }
   },
   computed: {
     selectedData () {
-      return this.totalData[`${this.default_campus}`]
+      const findTrue = (element) => { return element === true }
+      const locationValue = this.default_campus.findIndex(findTrue)
+      return this.daily[locationValue + 1]
     }
   },
   mounted () {
     this.showLine = true // showLine will only be set to true on the client. This keeps the DOM-tree in sync.
   },
   methods: {
+    isTrue (v) {
+      return v === true
+    },
     setCampus (v) {
-      this.default_campus = v
+      this.default_campus = this.default_campus.map(v => false)
+      this.default_campus[v - 1] = true
     },
     setChartData (c, uc) {
       const temp = {
@@ -208,9 +218,26 @@ export default {
 </script>
 
 <style scoped>
-.class-box {
+.classBox {
   display: flex;
   margin-right: 10px;
   width: 100%;
+}
+.locationSelect {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  height: 50px;
+}
+.statNow {
+  margin-top: 50px;
+}
+.selectButton {
+  background-color: hotpink !important;
+  color: white;
+}
+.unSelectButton {
+  background-color: white !important;
+  border: 1px dashed black;
 }
 </style>
