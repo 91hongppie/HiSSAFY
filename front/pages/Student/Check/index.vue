@@ -1,5 +1,5 @@
 <template>
-  <div class="container blue">
+  <div class="container blue" onunload="videoOff()">
     <header>
       <h1 class="titles text-center mb-5">
         체크하기
@@ -35,7 +35,10 @@ export default {
     this.start()
     // this.getVideo()
   },
-
+  beforeLeave (to, from, next) {
+    this.videoOff()
+    next()
+  },
   methods: {
     start () {
       const uri = '/assets/models'
@@ -116,6 +119,13 @@ export default {
     //       alert(err.name + ': ' + err.message)
     //     })
     // },
+    videoOff () {
+      const monitor = document.querySelector('video')
+      monitor.pause()
+      monitor.src = ''
+      // localstream.getTracks()[0].stop()
+      alert('Video off')
+    },
     showTime () {
       const date = new Date()
       let h = date.getHours() // 0 - 23
