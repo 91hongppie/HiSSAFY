@@ -1,6 +1,6 @@
 
 export default {
-  mode: 'universal',
+  mode: 'spa',
   /*
   ** Headers of the page
   */
@@ -68,6 +68,10 @@ export default {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
+      config.node = {
+        fs: 'empty'
+      }
+      return config
     }
   }
 }
