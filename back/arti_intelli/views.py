@@ -188,15 +188,15 @@ def check_on(request):
         if not datas[account.region.id].get(account.stage):
             datas[account.region.id][account.stage] = {}
             if not datas[account.region.id][account.stage].get(account.classes):
-                datas[account.region.id][account.stage][account.classes] = {'members': [], 'check': [], 'uncheck': []}
+                datas[account.region.id][account.stage][account.classes] = {'members': 0, 'check': [], 'uncheck': []}
         else:
             if not datas[account.region.id][account.stage].get(account.classes):
                 datas[account.region.id][account.stage][account.classes] = {'members': [], 'check': [], 'uncheck': []}
         if Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, student_info=account.id):
-            datas[account.region.id][account.stage][account.classes]['check'].append(account.name)
+            datas[account.region.id][account.stage][account.classes]['check'].append({'student_id': account.student_id, 'name':account.name})
         else:
-            datas[account.region.id][account.stage][account.classes]['uncheck'].append(account.name)
-        datas[account.region.id][account.stage][account.classes]['members'].append(account.name)
+            datas[account.region.id][account.stage][account.classes]['uncheck'].append({'student_id': account.student_id, 'name':account.name})
+        datas[account.region.id][account.stage][account.classes]['members'] += 1
     return Response(datas)
 
 
@@ -207,8 +207,14 @@ def check_on_month(request, pk1, pk2, pk3):
     """
     checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, student_info__stage=pk1, 
         student_info__region=pk2, student_info__classes=pk3).select_related('student_info').order_by('date', 'student_info__name')
-    serializers = CheckSerializer(checks, many=True)
-    return Response(serializers.data)
+
+    accounts = Account.objects.filter(stage=pk1, region=pk2, classes=pk3)
+    data = {}
+    for account in accounts:
+        checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, student_info=account.id)
+        serializers = CheckSerializer(checks, many=True)
+        data[f'{account.student_id}_{account.name}'] = serializers.data
+    return Response(data)
 
 
 @api_view(['GET'])
