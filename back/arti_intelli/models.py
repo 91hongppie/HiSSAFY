@@ -34,7 +34,7 @@ class Check(models.Model):
     out_time = models.TimeField(blank=True, null=True)
     is_late = models.BooleanField(default=False)
     is_early_left = models.BooleanField(default=False)
-    status = models.IntegerField()
+    status = models.IntegerField(default=0)
     student_info = models.ForeignKey(Account, on_delete=models.CASCADE)
     
     
