@@ -10,13 +10,13 @@
     </header>
     <div class="screens text-center">
       <p class="describe text-center">얼굴을 중앙에 두고 터치합니다.</p>
-      <video autoplay="true" @click="hideShow()">No video support in your browser</video>
+      <video id="face-video" width="640" height="480" autoplay muted ></video>
     </div>
     <div class="chk-face text-center">
       <div id="btns" style="visibility: hidden; margin-top: 50px;">
         <p class="describe text-center mt-5">사진 확인</p>
         <img src="">
-        <canvas style="display:none;" width="640" height="480" />
+        <!-- <canvas id="face-canvas" style="display:none;" width="640" height="480" /> -->
         <p></p>
         <v-btn id="yes" to="/student/check/completed_check" color="success mr-5" large>확인</v-btn>
         <v-btn id="no" color="deep-orange ml-5" large @click="refresh()">다시 찍기</v-btn>
@@ -41,17 +41,16 @@ export default {
   },
   methods: {
     start () {
-      const uri = '/assets/models'
-      Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri(uri),
-        faceapi.nets.faceLandmark68Net.loadFromUri(uri),
-        faceapi.nets.faceRecognitionNet.loadFromUri(uri),
-        faceapi.nets.faceExpressionNet.loadFromUri(uri)
-      ]).then(this.startVideo())
+      return Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+        faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+        faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+        faceapi.nets.faceExpressionNet.loadFromUri('/models')
+      ]).then(this.initFace())
     },
-    startVideo () {
-      const video = document.querySelector('video')
-      navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+    initFace () {
+      const video = document.getElementById('face-video')
+      navigator.mediaDevices.getUserMedia({ video: {} })
         .then(function (stream) {
           video.srcObject = stream
         })
@@ -60,13 +59,17 @@ export default {
       video.addEventListener('play', () => {
         const canvas = faceapi.createCanvasFromMedia(video)
         document.body.append(canvas)
-        const displaySize = { width: video.width, height: video.height }
+        const displaySize = {
+          width: video.width,
+          height: video.height
+        }
         faceapi.matchDimensions(canvas, displaySize)
         setInterval(async () => {
-          const detections = await faceapi.detectAllFaces(video,
-            new faceapi.TinyFaceDetectorOptions())
+          const detections = await faceapi
+            .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
             .withFaceLandmarks()
             .withFaceExpressions()
+
           const resizedDetections = faceapi.resizeResults(detections, displaySize)
           canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
           faceapi.draw.drawDetections(canvas, resizedDetections)
@@ -189,5 +192,19 @@ export default {
 .describe{
   font-size: 60pt;
   color: #ffffff;
+}
+
+canvas {
+  position: absolute;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
