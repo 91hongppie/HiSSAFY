@@ -30,9 +30,6 @@ export default {
     this.getVideo()
   },
   methods: {
-    chk () {
-      
-    },
     getVideo () {
       const constraints = { audio: false, video: true }
       const video = document.querySelector('video')
