@@ -15,9 +15,12 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/dotenv": "^1.4.0",
     "@nuxtjs/pwa": "^3.0.0-0",
+    "@tensorflow/tfjs-node": "^1.7.3",
     "axios": "^0.19.2",
+    "canvas": "^2.6.1",
     "chart.js": "^2.9.3",
     "chartjs": "^0.3.24",
+    "face-api.js": "^0.22.2",
     "nuxt": "^2.0.0",
     "vue-chartjs": "^3.5.0"
   },

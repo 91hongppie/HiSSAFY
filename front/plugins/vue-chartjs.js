@@ -11,9 +11,13 @@ Vue.component('my-line', {
     options: {
       type: Object,
       default: null
+    },
+    location: {
+      type: Number,
+      default: 1
     }
   },
-  mounted () {
+  updated () {
     this.renderChart(this.data, this.options)
   }
 })
@@ -28,10 +32,19 @@ Vue.component('my-doughnut', {
     options: {
       type: Object,
       default: null
+    },
+    location: {
+      type: Number,
+      default: 1
     }
   },
   mounted () {
     this.renderChart(this.data, this.options)
+  },
+  watch: {
+    location () {
+      this.renderChart(this.data, this.options)
+    }
   }
 })
 
