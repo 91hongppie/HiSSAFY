@@ -30,7 +30,7 @@
           />
         </v-col>
         <v-col>
-          <v-btn @click="searchClass">
+          <v-btn :to="`/main/classes/${selectedStag}n${selectedLoca}n${selectedClas}/`">
             검색
           </v-btn>
         </v-col>
@@ -73,15 +73,6 @@ export default {
       selectedLoca: null,
       selectedClas: null,
       classData: null
-    }
-  },
-  methods: {
-    searchClass () {
-      alert(`지역: ${this.selectedLoca}, 기수: ${this.selectedStag}, 반: ${this.selectedClas}`)
-      this.$axios.$get(`/api/checks/daily/${this.selectedStag}/${this.selectedLoca}/${this.selectedClas}/`)
-        .then((response) => {
-          this.classData = response
-        })
     }
   }
 }
