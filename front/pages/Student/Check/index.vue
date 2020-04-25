@@ -1,5 +1,5 @@
 <template>
-  <div class="container blue" onunload="videoOff()">
+  <div class="container" onunload="videoOff()">
     <header>
       <h1 class="titles text-center mb-5">
         체크하기
@@ -10,20 +10,17 @@
     </header>
     <div class="screens text-center">
       <p class="describe text-center">얼굴을 중앙에 두고 터치합니다.</p>
-      <video id="face-video" width="640" height="480" autoplay muted ></video>
     </div>
     <div class="chk-face text-center">
       <div id="btns" style="visibility: hidden; margin-top: 50px;">
         <p class="describe text-center mt-5">사진 확인</p>
         <img src="">
-        <!-- <canvas id="face-canvas" style="display:none;" width="640" height="480" /> -->
-        <p></p>
         <v-btn id="yes" to="/student/check/completed_check" color="success mr-5" large>확인</v-btn>
         <v-btn id="no" color="deep-orange ml-5" large @click="refresh()">다시 찍기</v-btn>
       </div>
       <img class="mt-5" src="">
-      <canvas style="display:none;" width="640" height="480" />
     </div>
+    <video id="face-video" width="720" height="560" autoplay muted />
   </div>
 </template>
 
@@ -40,6 +37,26 @@ export default {
     next()
   },
   methods: {
+    dataURItoBlob (dataURI) {
+      // convert base64/URLEncoded data component to raw binary data held in a string
+      let byteString
+      if (dataURI.split(',')[0].includes('base64') >= 0) {
+        byteString = atob(dataURI.split(',')[1])
+      } else {
+        byteString = unescape(dataURI.split(',')[1])
+      }
+
+      // separate out the mime component
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+      // write the bytes of the string to a typed array
+      const ia = new Uint8Array(byteString.length)
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i)
+      }
+
+      return new Blob([ia], { type: mimeString })
+    },
     start () {
       return Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
@@ -58,7 +75,7 @@ export default {
 
       video.addEventListener('play', () => {
         const canvas = faceapi.createCanvasFromMedia(video)
-        document.body.append(canvas)
+        // document.body.append(canvas)
         const displaySize = {
           width: video.width,
           height: video.height
@@ -67,15 +84,38 @@ export default {
         setInterval(async () => {
           const detections = await faceapi
             .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-            .withFaceLandmarks()
-            .withFaceExpressions()
-
-          const resizedDetections = faceapi.resizeResults(detections, displaySize)
+            // .withFaceLandmarks()
+            // .withFaceExpressions()
+          // const resizedDetections = faceapi.resizeResults(detections, displaySize)
           canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-          faceapi.draw.drawDetections(canvas, resizedDetections)
-          faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-          faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-        }, 100)
+          // faceapi.draw.drawDetections(canvas, resizedDetections)
+          if (detections) {
+            const ctx = canvas.getContext('2d')
+            for (const detectIndex in detections) {
+              ctx.drawImage(video, detections[`${detectIndex}`]._box.x, detections[`${detectIndex}`]._box.y, detections[`${detectIndex}`]._box.width, detections[`${detectIndex}`]._box.height, detections[`${detectIndex}`]._box.x, detections[`${detectIndex}`]._box.y, detections[`${detectIndex}`]._box.width, detections[`${detectIndex}`]._box.height)
+            }
+            const imageURI = canvas.toDataURL('image/jpeg')
+            const blob = this.dataURItoBlob(imageURI)
+            const formdata = new FormData()
+            formdata.append('pic_name', blob)
+            return this.$axios.$post('/api/recognition/', formdata)
+              .then(function (data) {
+                console.log(data)
+              })
+              .catch(e => console.error(e))
+            // detections.forEach(function (detection) {
+            //   const canvas1 = document.getElementById('canvas1')
+            //   const ctx = canvas1.getContext('2d')
+            //   const img = new Image()
+            //   img.src = video
+            //   img.onload = function () {
+            //     ctx.drawImage(img, detection._box.x, detection._box.y, detection._box.width, detection._box.height)
+            //   }
+            //   console.log(typeof img)
+            //   console.log(img)
+            // })
+          }
+        }, 500)
       })
     },
     // getVideo () {
@@ -194,11 +234,7 @@ export default {
   color: #ffffff;
 }
 
-canvas {
-  position: absolute;
-}
-
-body {
+#face-video {
   margin: 0;
   padding: 0;
   width: 100vw;
@@ -207,4 +243,9 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+canvas {
+  display: None;
+}
+
 </style>
