@@ -62,10 +62,12 @@ export default {
   /* top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%); */
-  color: #706c61;
+  color: #000000;
   font-size: 80pt;
   font-family: 'Helvetica';
   /* letter-spacing: 3px; */
+  margin-top: 100px;
+  margin-bottom: 100px;
 }
 
 .name {
