@@ -30,47 +30,49 @@
           />
         </v-col>
         <v-col>
-          <v-btn :to="'/main/classes/' + selectedStag + 'n' + selectedLoca + 'n' + selectedClas" @click="searchClass">
+          <v-btn :to="`/main/classes/${selectedStag}n${selectedLoca}n${selectedClas}/`">
             검색
           </v-btn>
         </v-col>
       </v-row>
     </v-form>
+    <div>
+      {{ classData }}
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   layout: 'admin',
+  asyncData () {
+
+  },
   data () {
     return {
       loca: [
         {
           text: '서울',
-          value: 0
-        },
-        {
-          text: '대전',
           value: 1
         },
         {
-          text: '광주',
+          text: '대전',
           value: 2
         },
         {
-          text: '구미',
+          text: '광주',
           value: 3
+        },
+        {
+          text: '구미',
+          value: 4
         }],
-      stag: [2, 3],
-      clas: [1, 2, 3, 4],
+      stag: [1, 2, 3],
+      clas: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       selectedStag: null,
       selectedLoca: null,
-      selectedClas: null
-    }
-  },
-  methods: {
-    searchClass () {
-      alert(`지역: ${this.selectedLoca}, 기수: ${this.selectedStag}, 반: ${this.selectedClas}`)
+      selectedClas: null,
+      classData: null
     }
   }
 }

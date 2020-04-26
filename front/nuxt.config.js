@@ -1,6 +1,6 @@
 
 export default {
-  mode: 'universal',
+  mode: 'spa',
   /*
   ** Headers of the page
   */
@@ -14,7 +14,7 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/hi_ssafy.ico' },
-      { rel: 'stylesheet', href: "//fonts.googleapis.com/css?family=Noto+Sans+KR" }
+      { rel: 'stylesheet', href: "https://fonts.googleapis.com/css?family=Gugi|Nanum+Gothic|Noto+Sans+KR|Jua&display=swap"}
     ]
   },
   /*
@@ -68,6 +68,10 @@ export default {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
+      config.node = {
+        fs: 'empty'
+      }
+      return config
     }
   }
 }

@@ -5,15 +5,9 @@
 </template>
 
 <style>
-html {
-  font-family: 'Helvetica';
-  font-size: 16px;
-  word-spacing: 1px;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
+.v-application--wrap {
+  background-color: #2196f3;
+  font-family: 'Noto Sans CJK KR', 'Helvetica'
 }
 /*
 *,
