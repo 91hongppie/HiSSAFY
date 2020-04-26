@@ -195,7 +195,7 @@ def check_on(request):
                 datas[account.region.id][account.stage][account.classes] = {'members': 0, 'check': [], 'uncheck': []}
         else:
             if not datas[account.region.id][account.stage].get(account.classes):
-                datas[account.region.id][account.stage][account.classes] = {'members': [], 'check': [], 'uncheck': []}
+                datas[account.region.id][account.stage][account.classes] = {'members': 0, 'check': [], 'uncheck': []}
         if Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, student_info=account.id):
             datas[account.region.id][account.stage][account.classes]['check'].append({'student_id': account.student_id, 'name':account.name})
         else:
@@ -389,7 +389,7 @@ def not_allclick(request, pk1, pk2, pk3):
 @api_view(['GET'])
 def classes_attendance(request, pk1, pk2, pk3):
     """
-        당월 일자별, 평균 출석률 (stage, region, classes)
+        당월 날짜별, 월평균 출석률 (stage, region, classes)
     """
     account = Account.objects.filter(stage=pk1, region=pk2, classes=pk3).order_by('name')
     a_datas = AccountSerializer(account, many=True)

@@ -36,8 +36,14 @@ class Check(models.Model):
     is_early_left = models.BooleanField(default=False)
     status = models.IntegerField(default=0)
     student_info = models.ForeignKey(Account, on_delete=models.CASCADE)
-    
-    
+
+
+# class AccountImage(models.Model):
+#     pic_name = models.FileField(upload_to='arti_intelli/pic_names', max_length=100)
+#     name = models.CharField(max_length=10)
+#     student_info = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+
 # class Face(models.Model):
 #     pic_name = models.FileField(upload_to='arti_intelli/pic_faces', max_length=100)
 #     top = models.IntegerField()

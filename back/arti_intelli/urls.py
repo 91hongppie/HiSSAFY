@@ -8,8 +8,8 @@ schema_view = get_swagger_view(title="API 문서")
 app_name = "arti_intelli"
 urlpatterns = [
     path('add/data/', views.add_data, name="add_data"),
-    path('add/account/', views.AddAccount.as_view()),
-    path('recognition/', views.Recognition.as_view()),
+    path('add/account/', views.AddAccount.as_view(), name="add_account"),
+    path('recognition/', views.Recognition.as_view(), name="recognition"),
     path('add/campus/', views.add_campus),
     path('api-token-auth/', obtain_jwt_token),
     path('rest-auth/', include('rest_auth.urls')),
