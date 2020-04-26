@@ -22,6 +22,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 
+# SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = True
 
 # Application definition
 
@@ -62,10 +64,12 @@ REST_FRAMEWORK = {
 }
 
 REST_USE_JWT = True
+
 REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'rest_auth.serializers.LoginSerializer',
     'LOGOUT_SERIALIZER': 'rest_auth.serializers.LogoutSerializer',
 }
+
 JWT_AUTH = {
     # 'JWT_SECRET_KEY': SECRET_KEY,
     'JWT_ALGORITHM': 'HS256',

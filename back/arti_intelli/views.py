@@ -195,7 +195,7 @@ def check_on(request):
                 datas[account.region.id][account.stage][account.classes] = {'members': 0, 'check': [], 'uncheck': []}
         else:
             if not datas[account.region.id][account.stage].get(account.classes):
-                datas[account.region.id][account.stage][account.classes] = {'members': [], 'check': [], 'uncheck': []}
+                datas[account.region.id][account.stage][account.classes] = {'members': 0, 'check': [], 'uncheck': []}
         if Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, student_info=account.id):
             datas[account.region.id][account.stage][account.classes]['check'].append({'student_id': account.student_id, 'name':account.name})
         else:
@@ -389,7 +389,7 @@ def not_allclick(request, pk1, pk2, pk3):
 @api_view(['GET'])
 def classes_attendance(request, pk1, pk2, pk3):
     """
-        당월 일자별, 평균 출석률 (stage, region, classes)
+        당월 날짜별, 월평균 출석률 (stage, region, classes)
     """
     account = Account.objects.filter(stage=pk1, region=pk2, classes=pk3).order_by('name')
     a_datas = AccountSerializer(account, many=True)
@@ -404,7 +404,7 @@ def classes_attendance(request, pk1, pk2, pk3):
     for day in range(1, 32):
         total_persons = len(students)
         attend_persons = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=day,
-            student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=False).aggregate(Count('id'))['id__count']
+            student_info__stage=pk1, student_info__region=pk2, student_info__classes=pk3, in_time__isnull=False, status=True).aggregate(Count('id'))['id__count']
         attendance_rate = '{:.0f}'.format((attend_persons / total_persons) * 100)
         checks = Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=day)
         if checks:
@@ -431,8 +431,12 @@ def in_calling(request):
     student_id = '0233100'
     students = Account.objects.filter(student_id=student_id)
     student = AccountSerializer(students, many=True).data[0]['id']
-    if not Check.objects.filter(date=date.today(), student_info__student_id=student_id):
-        Check.objects.create(date=date.today(), in_time=datetime.now().time(), status='1', student_info=Account.objects.get(id=student))
+    checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
+    if not checks:
+        if datetime.now().time() < '09:00:00':
+            Check.objects.create(date=date.today(), in_time=datetime.now().time(), status='1', student_info=Account.objects.get(id=student))
+        else:
+            Check.objects.create(date=date.today(), in_time=datetime.now().time(), is_late=True, status='1', student_info=Account.objects.get(id=student))
     checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
@@ -444,8 +448,15 @@ def out_calling(request):
         퇴실 클릭
     """
     student_id = '0233100'
-    check = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
-    check.update(out_time=datetime.now().time())
+    checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
+    if checks:
+        if datetime.now().time() >= '18:00:00':
+            check.update(out_time=datetime.now().time())
+        else:
+            if datetime.now().time() >= '14:00:00':
+                check.update(out_time=datetime.now().time(), is_early_left=True)
+            else:
+                check.update(out_time=datetime.now().time(), status=0)
     checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
     serializers = CheckSerializer(checks, many=True)
     return Response(serializers.data)
