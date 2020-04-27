@@ -38,6 +38,8 @@ class Recognition(APIView):
     def post(self, request):
         # image = request.FILES['pic_name']
         image = request.data['pic_name']
+        region_id = request.data['region_id']
+        region = Campus.objects.get(id=region_id).campus
         image1 = fr.load_image_file(image)
         faces = fr.face_locations(image1)
         data_list = []
@@ -47,7 +49,7 @@ class Recognition(APIView):
             unknown_face = fr.face_encodings(image_face)
             dis = 1
             # region_name = request.data.get('region')
-            with open(f'data/accounts_대전.json') as accounts:
+            with open(f'data/accounts_{region}.json') as accounts:
                 datas = json.load(accounts)
             for student_id, data in datas.items():
                 for dt in data:
@@ -86,10 +88,7 @@ class AddAccount(APIView):
         try:
             with open(f'data/accounts_{region_name}.json') as accounts:
                 data = json.load(accounts)
-            if info.get('student_id') in data:
-                data[info.get('student_id')].append(known_face[0].tolist())
-            else:
-                data[info.get('student_id')] = [known_face[0].tolist()]
+            data[info.get('student_id')] = [known_face[0].tolist()]
         except:
             data = {}
             data[info.get('student_id')] = [known_face[0].tolist()]
@@ -195,7 +194,7 @@ def check_on(request):
                 datas[account.region.id][account.stage][account.classes] = {'members': 0, 'check': [], 'uncheck': []}
         else:
             if not datas[account.region.id][account.stage].get(account.classes):
-                datas[account.region.id][account.stage][account.classes] = {'members': [], 'check': [], 'uncheck': []}
+                datas[account.region.id][account.stage][account.classes] = {'members': 0, 'check': [], 'uncheck': []}
         if Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, student_info=account.id):
             datas[account.region.id][account.stage][account.classes]['check'].append({'student_id': account.student_id, 'name':account.name})
         else:
