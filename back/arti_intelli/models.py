@@ -38,10 +38,10 @@ class Check(models.Model):
     student_info = models.ForeignKey(Account, on_delete=models.CASCADE)
 
 
-# class AccountImage(models.Model):
-#     pic_name = models.FileField(upload_to='arti_intelli/pic_names', max_length=100)
-#     name = models.CharField(max_length=10)
-#     student_info = models.ForeignKey(Account, on_delete=models.CASCADE)
+class AccountImage(models.Model):
+    pic_name = models.FileField(upload_to='arti_intelli/pic_names', max_length=100)
+    name = models.CharField(max_length=10)
+    student_info = models.ForeignKey(Account, on_delete=models.CASCADE)
 
 
 # class Face(models.Model):

@@ -21,6 +21,7 @@ urlpatterns = [
     path('checks/notout/<int:pk1>/<int:pk2>/<int:pk3>/', views.not_outclick, name="not_outclick"),
     path('checks/notin/<int:pk1>/<int:pk2>/<int:pk3>/', views.not_inclick, name="not_inclick"),
     path('checks/daily/<int:pk1>/<int:pk2>/<int:pk3>/', views.check_on_daily, name="check_on_daily"),
+    path('checks/month/student/<pk1>/<int:pk2>/<int:pk3>/', views.check_on_month_one, name="check_on_month_one"),
     path('checks/month/<int:pk1>/<int:pk2>/<int:pk3>/<int:pk4>/<int:pk5>/', views.check_on_month, name="check_on_month"),
     path('checks/', views.check_on, name="check_on"),
     path('accounts/<int:pk1>/<int:pk2>/', views.account_list_region, name="account_list_region"),

@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Campus, Account, Check
-from .serializers import CampusSerializer, AccountSerializer, CheckSerializer
+from .models import Campus, Account, Check, AccountImage
+from .serializers import CampusSerializer, AccountSerializer, CheckSerializer, AccountImageSerializer
 from rest_framework.decorators import api_view, permission_classes, authentication_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
@@ -209,30 +209,29 @@ def check_on(request):
 @api_view(['GET'])
 def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
     """
-        월별 교육생 출결정보 상세목록 (stage, region, classes, year, month)
+        월별 교육생 출결정보 상세목록(반) (stage, region, classes, year, month)
     """
-    account = Account.objects.filter(stage=pk1, region=pk2, classes=pk3).order_by('name')
-    a_datas = AccountSerializer(account, many=True)
-    accounts = a_datas.data
+    accounts = Account.objects.filter(stage=pk1, region=pk2, classes=pk3).order_by('name')
     students = []
-    for acc in accounts:
-        if [acc['student_id'], acc['name']] not in students:
-            students.append([acc['student_id'], acc['name']])
+    for acc in range(len(accounts)):
+        student_id = accounts.values('student_id')[acc]['student_id']
+        name = accounts.values('name')[acc]['name']
+        if [student_id, name] not in students:
+            students.append([student_id, name])
     datas = []
-    class_days = 0
     for student in students:
         checks = Check.objects.filter(date__year=pk4, date__month=pk5, student_info__student_id=student[0])
+        class_days = 0
         not_attend_day = 0
         for day in range(1, 32):
-            class_day = Check.objects.filter(date__year=pk4, date__month=pk5, date__day=day).aggregate(Count('id'))['id__count']
-            if class_day != 0:
+            class_day = Check.objects.filter(date__year=pk4, date__month=pk5, date__day=day)
+            if class_day:
                 class_days += 1
                 if not checks.filter(date__day=day):
                     not_attend_day += 1
-            if checks.filter(date__day=day):
-                come_late_cnt = checks.filter(in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
-                early_left_cnt = checks.filter(out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
-                normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
+        come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
+        early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
+        normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
         attend_day = class_days - not_attend_day
         public_vacation_day = 0
         allow_absent_day = 0
@@ -255,6 +254,51 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
             'education_costs': education_costs
         }
         datas.append(data)
+    return Response(datas)
+
+
+@api_view(['GET'])
+def check_on_month_one(request, pk1, pk2, pk3):
+    """
+        월별 교육생 출결정보 상세목록(개인) (student_id, year, month)
+    """
+    student_id = pk1
+    name = Account.objects.filter(student_id=pk1).values('name')[0]['name']
+    datas = []
+    checks = Check.objects.filter(date__year=pk2, date__month=pk3, student_info__student_id=pk1)
+    class_days = 0
+    not_attend_day = 0
+    for day in range(1, 32):
+        class_day = Check.objects.filter(date__year=pk2, date__month=pk3, date__day=day)
+        if class_day:
+            class_days += 1
+            if not checks.filter(date__day=day):
+                not_attend_day += 1
+    come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
+    early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
+    normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
+    attend_day = class_days - not_attend_day
+    public_vacation_day = 0
+    allow_absent_day = 0
+    Disallow_absent_day = not_attend_day-allow_absent_day-public_vacation_day
+    attendance_rate = '{:.0f}'.format(((class_days - not_attend_day) / class_days) * 100)
+    education_costs = '{:.0f}'.format(((class_days - Disallow_absent_day - allow_absent_day) / class_days) * 1000000)
+    data = {
+        'student_id': student_id,
+        'name': name,
+        'class_days': class_days,
+        'attend_day': attend_day,
+        'normal_attend_day': normal_attend_day,
+        'come_late_cnt': come_late_cnt,
+        'early_left_cnt': early_left_cnt,
+        'not_attend_day': not_attend_day,
+        'public_vacation_day': public_vacation_day,
+        'allow_absent_day': allow_absent_day,
+        'Disallow_absent_day': Disallow_absent_day,
+        'attendance_rate': attendance_rate,
+        'education_costs': education_costs
+    }
+    datas.append(data)
     return Response(datas)
 
 
