@@ -84,7 +84,7 @@ export default {
       locations: ['서울', '대전', '광주', '구미'],
       stage: ['success', 'warning', 'info'],
       default_campus: [true, false, false, false],
-      selectLocation: 1
+      selectLocation: 0
     }
   },
   computed: {
