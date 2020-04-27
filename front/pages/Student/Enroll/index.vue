@@ -22,15 +22,15 @@
           <v-btn id="yes" color="success mr-5" large @click="stopSave()">제출</v-btn>
           <v-btn id="no" color="deep-orange ml-5" large @click="refresh()">다시 찍기</v-btn>
           <div class="infos">
-            <v-text-field v-model="name" label="이름" placeholder="예: 홍길동"></v-text-field>
-            <v-text-field v-model="student_id" label="학번" placeholder="예: 0123567"></v-text-field>
-            <v-text-field v-model="stage" label="기수" placeholder="2기인 경우: 2 입력"></v-text-field>
-            <v-text-field v-model="classes" label="반" placeholder="1반인 경우: 1 입력"></v-text-field>
-            <v-text-field v-model="birthday" label="생일" placeholder="예: 1990-01-01"></v-text-field>
+            <v-text-field v-model="name" label="이름" placeholder="예: 홍길동" />
+            <v-text-field v-model="student_id" label="학번" placeholder="예: 0123567" />
+            <v-select v-model="campus" :items="items" label="캠퍼스" />
+            <v-text-field v-model="stage" label="기수" placeholder="2기인 경우: 2 입력" />
+            <v-text-field v-model="classes" label="반" placeholder="1반인 경우: 1 입력" />
+            <v-text-field v-model="birthday" label="생일" placeholder="예: 1990-01-01" />
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -46,7 +46,9 @@ export default {
       student_id: '',
       stage: '',
       classes: '',
-      birthday: ''
+      birthday: '',
+      items: ['서울', '대전', '구미', '광주'],
+      campus: ''
     }
   },
   mounted () {
@@ -57,6 +59,26 @@ export default {
     next()
   },
   methods: {
+    dataURItoBlob (dataURI) {
+      // convert base64/URLEncoded data component to raw binary data held in a string
+      let byteString
+      if (dataURI.split(',')[0].includes('base64') >= 0) {
+        byteString = atob(dataURI.split(',')[1])
+      } else {
+        byteString = unescape(dataURI.split(',')[1])
+      }
+
+      // separate out the mime component
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+      // write the bytes of the string to a typed array
+      const ia = new Uint8Array(byteString.length)
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i)
+      }
+
+      return new Blob([ia], { type: mimeString })
+    },
     getVideo () {
       const constraints = { audio: false, video: true }
       const video = document.querySelector('video')
@@ -68,7 +90,7 @@ export default {
         if (localMediaStream) {
           const image = document.querySelector('img')
           context.drawImage(video, 0, 0, 640, 480)
-          image.src = canvas.toDataURL('image/png')
+          image.src = canvas.toDataURL('image/jpeg')
         }
       }
       video.addEventListener('click', snapshot, false)
@@ -122,21 +144,21 @@ export default {
         video.style.visbiility = 'hidden'
       }
     },
-    stopSave (data) {
+    stopSave () {
       const canvas = document.querySelector('canvas')
       const image = document.querySelector('img')
       image.src = canvas.toDataURL('image/png')
-      const credentials = {
-        pic_name: image.src,
-        name: this.data.name,
-        student_id: this.data.student_id,
-        stage: this.data.stage,
-        classes: this.data.classes,
-        birthday: this.data.birthday
-      }
-      console.log(credentials)
+      const blob = this.dataURItoBlob(image.src)
+      const formdata = new FormData()
+      formdata.append('pic_name', blob)
+      formdata.append('name', this.name)
+      formdata.append('student_id', this.student_id)
+      formdata.append('stage', this.stage)
+      formdata.append('classes', this.classes)
+      formdata.append('birthday', this.birthday)
+      formdata.append('region', this.campus)
       StudentApi.Enroll(
-        credentials,
+        formdata,
         (res) => {
           if (res.status === 200) {
             this.$router.push({

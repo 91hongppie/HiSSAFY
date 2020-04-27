@@ -32,22 +32,23 @@ export default {
       let h = date.getHours() // 0 - 23
       let m = date.getMinutes() // 0 - 59
       let s = date.getSeconds() // 0 - 59
-      let session = 'AM'
+      // let session = 'AM'
 
-      if (h === 0) {
-        h = 12
-      }
+      // if (h === 0) {
+      //   h = 12
+      // }
 
-      if (h > 12) {
-        h = h - 12
-        session = 'PM'
-      }
+      // if (h > 12) {
+      //   h = h - 12
+      //   session = 'PM'
+      // }
 
       h = (h < 10) ? '0' + h : h
       m = (m < 10) ? '0' + m : m
       s = (s < 10) ? '0' + s : s
 
-      const time = h + ':' + m + ':' + s + ' ' + session
+      // const time = h + ':' + m + ':' + s + ' ' + session
+      const time = h + ':' + m + ':' + s + ' '
       document.getElementById('ClockDisplay').textContent = time
 
       setTimeout(this.showTime, 1000)
@@ -62,7 +63,7 @@ export default {
   /* top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%); */
-  color: #000000;
+  color: #ffffff;
   font-size: 80pt;
   font-family: 'Helvetica';
   /* letter-spacing: 3px; */

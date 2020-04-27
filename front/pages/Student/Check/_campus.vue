@@ -8,9 +8,6 @@
         <p id="ClockDisplay" class="clock" onload="showTime()" />
       </div>
     </header>
-    <div class="screens text-center">
-      <p class="describe text-center">얼굴을 중앙에 두고 터치합니다.</p>
-    </div>
     <div class="chk-face text-center">
       <div id="btns" style="visibility: hidden; margin-top: 50px;">
         <p class="describe text-center mt-5">사진 확인</p>
@@ -28,6 +25,11 @@
 import * as faceapi from 'face-api.js'
 
 export default {
+  asyncData ({ params }) {
+    const campusRoot = params.campus
+
+    return { campusRoot }
+  },
   mounted () {
     this.start()
     // this.getVideo()
@@ -91,13 +93,12 @@ export default {
           // faceapi.draw.drawDetections(canvas, resizedDetections)
           if (detections) {
             const ctx = canvas.getContext('2d')
-            for (const detectIndex in detections) {
-              ctx.drawImage(video, detections[`${detectIndex}`]._box.x, detections[`${detectIndex}`]._box.y, detections[`${detectIndex}`]._box.width, detections[`${detectIndex}`]._box.height, detections[`${detectIndex}`]._box.x, detections[`${detectIndex}`]._box.y, detections[`${detectIndex}`]._box.width, detections[`${detectIndex}`]._box.height)
-            }
+            ctx.drawImage(video, 0, 0, 720, 560)
             const imageURI = canvas.toDataURL('image/jpeg')
             const blob = this.dataURItoBlob(imageURI)
             const formdata = new FormData()
             formdata.append('pic_name', blob)
+            formdata.append('region_id', this.campusRoot)
             return this.$axios.$post('/api/recognition/', formdata)
               .then(function (data) {
                 console.log(data)
@@ -115,7 +116,7 @@ export default {
             //   console.log(img)
             // })
           }
-        }, 500)
+        }, 2000)
       })
     },
     // getVideo () {
@@ -174,22 +175,23 @@ export default {
       let h = date.getHours() // 0 - 23
       let m = date.getMinutes() // 0 - 59
       let s = date.getSeconds() // 0 - 59
-      let session = 'AM'
+      // let session = 'AM'
 
-      if (h === 0) {
-        h = 12
-      }
+      // if (h === 0) {
+      //   h = 12
+      // }
 
-      if (h > 12) {
-        h = h - 12
-        session = 'PM'
-      }
+      // if (h > 12) {
+      //   h = h - 12
+      //   session = 'PM'
+      // }
 
       h = (h < 10) ? '0' + h : h
       m = (m < 10) ? '0' + m : m
       s = (s < 10) ? '0' + s : s
 
-      const time = h + ':' + m + ':' + s + ' ' + session
+      const time = h + ':' + m + ':' + s + ' '
+      // const time = h + ':' + m + ':' + s + ' ' + session
       document.getElementById('ClockDisplay').textContent = time
 
       setTimeout(this.showTime, 1000)
@@ -223,7 +225,7 @@ export default {
 
 .clock {
   position: relative;
-  color: #706c61;
+  color: #ffffff;
   font-size: 65pt;
   font-family: 'Helvetica';
   /* letter-spacing: 3px; */
