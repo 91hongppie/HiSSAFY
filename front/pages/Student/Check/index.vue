@@ -5,19 +5,23 @@
         체크하기
       </h1>
       <div class="text-center">
-        <p id="ClockDisplay" class="clock" onload="showTime()" />
+        <p id="ClockDisplay" class="clock" />
       </div>
     </header>
-    <div class="chk-face text-center">
-      <div id="btns" style="visibility: hidden; margin-top: 50px;">
-        <p class="describe text-center mt-5">사진 확인</p>
-        <img src="">
-        <v-btn id="yes" to="/student/check/completed_check" color="success mr-5" large>확인</v-btn>
-        <v-btn id="no" color="deep-orange ml-5" large @click="refresh()">다시 찍기</v-btn>
+    <div>
+      <div class="locationSelect">
+        <v-chip
+          v-for="lo in locations.length"
+          :key="lo"
+          class="mt-3 mx-2"
+          :class="{ 'selectButton': default_campus[lo - 1], 'unSelectButton': !default_campus[lo - 1] }"
+          @click="setCampus(lo)"
+        >
+          {{ locations[lo - 1] }}
+        </v-chip>
       </div>
-      <img class="mt-5" src="">
+      <video id="face-video" width="720" height="560" autoplay muted />
     </div>
-    <video id="face-video" width="720" height="560" autoplay muted />
   </div>
 </template>
 
@@ -30,8 +34,17 @@ export default {
 
     return { campusRoot }
   },
+  data: () => {
+    return {
+      locations: ['서울', '대전', '광주', '구미'],
+      stage: ['success', 'warning', 'info'],
+      default_campus: [true, false, false, false],
+      selectLocation: 0
+    }
+  },
   mounted () {
     this.start()
+    this.showTime()
     // this.getVideo()
   },
   beforeLeave (to, from, next) {
@@ -58,6 +71,12 @@ export default {
       }
 
       return new Blob([ia], { type: mimeString })
+    },
+    setCampus (v) {
+      this.default_campus = this.default_campus.map(v => false)
+      this.default_campus[v - 1] = true
+      this.selectLocation = v - 1
+      console.log(this.selectLocation)
     },
     start () {
       return Promise.all([
@@ -98,23 +117,12 @@ export default {
             const blob = this.dataURItoBlob(imageURI)
             const formdata = new FormData()
             formdata.append('pic_name', blob)
-            formdata.append('region_id', this.campusRoot)
+            formdata.append('region_id', this.selectLocation + 1)
             return this.$axios.$post('/api/recognition/', formdata)
               .then(function (data) {
                 console.log(data)
               })
               .catch(e => console.error(e))
-            // detections.forEach(function (detection) {
-            //   const canvas1 = document.getElementById('canvas1')
-            //   const ctx = canvas1.getContext('2d')
-            //   const img = new Image()
-            //   img.src = video
-            //   img.onload = function () {
-            //     ctx.drawImage(img, detection._box.x, detection._box.y, detection._box.width, detection._box.height)
-            //   }
-            //   console.log(typeof img)
-            //   console.log(img)
-            // })
           }
         }, 2000)
       })
@@ -237,11 +245,8 @@ export default {
 }
 
 #face-video {
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
+  width: 100%;
+  height: 78%;
   justify-content: center;
   align-items: center;
 }
@@ -250,4 +255,19 @@ canvas {
   display: None;
 }
 
+.locationSelect {
+  width: 100%;
+  top: 0;
+  text-align: center;
+  height: 50px;
+}
+
+.selectButton {
+  background-color: hotpink !important;
+  color: white;
+}
+.unSelectButton {
+  background-color: white !important;
+  border: 1px dashed black;
+}
 </style>

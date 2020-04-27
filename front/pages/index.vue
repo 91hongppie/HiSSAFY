@@ -15,10 +15,10 @@
       <p id="ClockDisplay" class="clock" />
     </div>
     <div class="std-btn text-center check">
-      <v-btn to="/student/check" color="green darken-2" class="mb-5 btn" large>체크하기</v-btn>
+      <v-btn :to="`/student/check/`" color="green darken-2" class="mb-5 btn" large>체크하기</v-btn>
     </div>
     <div class="std-btn text-center enroll">
-      <v-btn to="/student/enroll" color="blue darken-4" class="mt-5 btn" large>얼굴 등록하기</v-btn>
+      <v-btn to="/student/enroll/" color="blue darken-4" class="mt-5 btn" large>얼굴 등록하기</v-btn>
     </div>
   </div>
 </template>
@@ -28,7 +28,6 @@ export default {
   mounted () {
     this.showTime()
   },
-
   methods: {
     showTime () {
       const date = new Date()
@@ -72,7 +71,7 @@ export default {
   font-size: 80pt;
   font-family: 'Helvetica';
   /* letter-spacing: 3px; */
-  margin-top: 100px;
+  margin-top: 50px;
   margin-bottom: 100px;
 }
 
@@ -97,5 +96,14 @@ export default {
   font-size: 15pt;
   font-family: 'Noto Sans CJK KR';
   color: white;
+}
+
+.campus {
+  width: 200px;
+  margin-top: 50px;
+  margin-bottom: 0px;
+  margin-right: auto;
+  margin-left: auto;
+
 }
 </style>
