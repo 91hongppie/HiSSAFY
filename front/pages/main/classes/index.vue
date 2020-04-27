@@ -37,7 +37,7 @@
       </v-row>
     </v-form>
     <div>
-      {{ classData }}
+      <nuxt />
     </div>
   </div>
 </template>
