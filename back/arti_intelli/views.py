@@ -37,31 +37,36 @@ class Recognition(APIView):
     """
     def post(self, request):
         # image = request.FILES['pic_name']
-        image = request.data['pic_name']
-        image1 = fr.load_image_file(image)
-        faces = fr.face_locations(image1)
         data_list = []
-        for face in faces:
-            top, right, bottom, left = face
-            image_face = image1[top:bottom, left:right]
-            unknown_face = fr.face_encodings(image_face)
-            dis = 1
-            # region_name = request.data.get('region')
-            with open(f'data/accounts_대전.json') as accounts:
-                datas = json.load(accounts)
-            for student_id, data in datas.items():
-                for dt in data:
-                    dt = [np.asarray(dt)]
-                    distance = fr.face_distance(dt, unknown_face[0])
-                    if distance < dis and distance < 0.5:
-                        if not Check.objects.filter(student_info=student_id):
-                            dis = distance
-                            account_student_id = student_id
-            accounts = Account.objects.filter(student_id=account_student_id)
-            serializer = AccountSerializer(accounts, many=True)
-            data = serializer.data
-            # data['face_encodings'] = unknown_face[0].tolist()
-            data_list.append(data)
+        try:
+            image = request.data['pic_name']
+            region_id = request.data['region_id']
+            region = Campus.objects.get(id=region_id).campus
+            image1 = fr.load_image_file(image)
+            faces = fr.face_locations(image1)
+            for face in faces:
+                top, right, bottom, left = face
+                image_face = image1[top:bottom, left:right]
+                unknown_face = fr.face_encodings(image_face)
+                dis = 1
+                # region_name = request.data.get('region')
+                with open(f'data/accounts_{region}.json') as accounts:
+                    datas = json.load(accounts)
+                for student_id, data in datas.items():
+                    for dt in data:
+                        dt = [np.asarray(dt)]
+                        distance = fr.face_distance(dt, unknown_face[0])
+                        if distance < dis and distance < 0.5:
+                            if not Check.objects.filter(student_info=student_id):
+                                dis = distance
+                                account_student_id = student_id
+                accounts = Account.objects.filter(student_id=account_student_id)
+                serializer = AccountSerializer(accounts, many=True)
+                data = serializer.data
+                # data['face_encodings'] = unknown_face[0].tolist()
+                data_list.append(data)
+        except:
+            return Response(data_list)
         return Response(data_list)
 
 
@@ -86,10 +91,7 @@ class AddAccount(APIView):
         try:
             with open(f'data/accounts_{region_name}.json') as accounts:
                 data = json.load(accounts)
-            if info.get('student_id') in data:
-                data[info.get('student_id')].append(known_face[0].tolist())
-            else:
-                data[info.get('student_id')] = [known_face[0].tolist()]
+            data[info.get('student_id')] = [known_face[0].tolist()]
         except:
             data = {}
             data[info.get('student_id')] = [known_face[0].tolist()]
