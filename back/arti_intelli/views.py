@@ -66,16 +66,24 @@ class Recognition(APIView):
                             if not Check.objects.filter(student_info=student_id):
                                 dis = distance
                                 account_student_id = student_id
+                if account_student_id:
+                    if len(datas[account_student_id]) == 20:
+                        datas[account_student_id] = datas[account_student_id][1::]
+                    datas[account_student_id].append(unknown_face[0].tolist())
+                    with open(f'data/accounts_{region}.json', 'w', encoding='utf-8') as accounts:
+                        json.dump(datas, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
                 student_id = account_student_id
                 students = Account.objects.filter(student_id=student_id)
                 student = AccountSerializer(students[0]).data['id']
                 checks = Check.objects.filter(date=date.today(), student_info_id=student)
                 if not checks:
+                    status = cv2.imwrite(f'in_pic/{region_id}/{date.today()}_{student_id}.jpg', image1)
                     if now < in_time:
                         Check.objects.create(date=date.today(), in_time=now, status='1', student_info=Account.objects.get(id=student))
                     else:
                         Check.objects.create(date=date.today(), in_time=now, is_late=True, status='1', student_info=Account.objects.get(id=student))
                 else:
+                    status = cv2.imwrite(f'out_pic/{region_id}/{date.today()}_{student_id}.jpg', image1)
                     if now >= out_time:
                         checks[0].out_time = now
                         checks[0].is_early_left = False
@@ -107,6 +115,7 @@ class AddAccount(APIView):
             return Response('이미 등록된 사용자입니다.')
         image_name = request.FILES['pic_name']
         known_image = fr.load_image_file(image_name)
+        known_image = cv2.add(known_image, np.array([30.0]))
         top, right, bottom, left = fr.face_locations(known_image)[0]
         known_image_face = known_image[top:bottom, left:right]
         known_face = fr.face_encodings(known_image_face)

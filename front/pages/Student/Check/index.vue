@@ -31,7 +31,7 @@ import * as faceapi from 'face-api.js'
 export default {
   data: () => {
     return {
-      locations: ['서울', '대전', '광주', '구미'],
+      locations: ['서울', '대전', '구미', '광주'],
       stage: ['success', 'warning', 'info'],
       default_campus: [true, false, false, false],
       selectLocation: 0
