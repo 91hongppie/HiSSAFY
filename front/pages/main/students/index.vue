@@ -2,15 +2,32 @@
   <div>
     <div class="locationSelect d-flex justify-space-around align-center jua">
       <div>
-        <v-chip
-          v-for="lo in locations.length"
-          :key="lo"
-          class="mt-3 mx-2"
-          :class="{ 'selectButton': default_campus[lo - 1], 'unSelectButton': !default_campus[lo - 1] }"
-          @click="setCampus(lo)"
+        <v-combobox
+          v-model="model"
+          :items="locations"
+          :search-input.sync="selectLo"
+          hide-selected
+          multiple
+          chips
         >
-          {{ locations[lo - 1] }}
-        </v-chip>
+          <template v-slot:selection="{ attrs, item, parent, selected }">
+            <v-chip
+              v-if="item === Object(item)"
+              v-bind="attrs"
+              color="blue lighten-1"
+              :input-value="selected"
+              label
+            >
+              <span class="pr-2" style="color: white;">
+                {{ item.text }}
+              </span>
+              <v-icon
+                small
+                @click="parent.selectItem(item)"
+              >mdi-close</v-icon>
+            </v-chip>
+          </template>
+        </v-combobox>
       </div>
       <v-form class="d-flex justify-center align-center">
         <v-text-field v-model="searchName" placeholder="학생 이름"></v-text-field>
@@ -18,23 +35,7 @@
       </v-form>
     </div>
     <div>
-      <NuxtChild :key="selectLocation" />
-      <v-row>
-        <v-col class="text-center font-weight-bold">이름</v-col>
-        <v-col class="text-center font-weight-bold">입실 상태</v-col>
-        <v-col class="text-center font-weight-bold">평균 입실시간</v-col>
-        <v-col class="text-center font-weight-bold">평균 퇴실시간</v-col>
-        <v-col class="text-center font-weight-bold">지각 (회)</v-col>
-        <v-col class="text-center font-weight-bold">결석 (회)</v-col>
-      </v-row>
-      <v-row v-for="student in searchedList" :key="student.id">
-        <v-col class="text-center"><nuxt-link :to="`/main/students/${student.id}`">{{ student.name }}</nuxt-link></v-col>
-        <v-col class="text-center">{{ student.mark }}</v-col>
-        <v-col class="text-center">{{ student.intime }}</v-col>
-        <v-col class="text-center">{{ student.outtime }}</v-col>
-        <v-col class="text-center">{{ student.late }}</v-col>
-        <v-col class="text-center">{{ student.out }}</v-col>
-      </v-row>
+      <NuxtChild :key="searchName" />
     </div>
   </div>
 </template>
@@ -42,19 +43,29 @@
 <script>
 export default {
   layout: 'super',
-  async asyncData ({ $axios }) {
-    const today = new Date()
-    const year = today.getFullYear()
-    const month = today.getMonth() + 1
-    const studentData = await $axios.$get(`/api/checks/month/region/2/${year}/${month}/`)
-    return { studentData }
-  },
   data () {
     return {
-      locations: ['서울', '대전', '광주', '구미'],
-      default_campus: [true, false, false, false],
-      selectLocation: 0,
-      searchName: ''
+      model: [],
+      locations: [
+        {
+          text: '서울',
+          value: 1
+        },
+        {
+          text: '대전',
+          value: 2
+        },
+        {
+          text: '광주',
+          value: 3
+        },
+        {
+          text: '구미',
+          value: 4
+        }
+      ],
+      selectLo: null,
+      searchName: null
     }
   },
   watch: {
