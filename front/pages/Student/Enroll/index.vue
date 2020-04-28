@@ -5,7 +5,7 @@
         얼굴 등록하기
       </h1>
       <div class="text-center">
-        <p id="ClockDisplay" class="clock" onload="showTime()" />
+        <p id="ClockDisplay" class="clock" />
       </div>
     </header>
     <div class="screens text-center">
@@ -53,6 +53,7 @@ export default {
   },
   mounted () {
     this.getVideo()
+    this.showTime()
   },
   beforeLeave (to, from, next) {
     document.querySelector('video').pause()
@@ -189,8 +190,8 @@ export default {
 
 .clock {
   position: relative;
-  color: #706c61;
-  font-size: 25pt;
+  color: #ffffff;
+  font-size: 35pt;
   font-family: 'Helvetica';
   /* letter-spacing: 3px; */
 }
