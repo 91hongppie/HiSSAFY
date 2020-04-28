@@ -91,7 +91,6 @@ export default {
 
       video.addEventListener('play', () => {
         const canvas = faceapi.createCanvasFromMedia(video)
-        // document.body.append(canvas)
         const displaySize = {
           width: video.width,
           height: video.height
@@ -100,11 +99,7 @@ export default {
         setInterval(async () => {
           const detections = await faceapi
             .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-            // .withFaceLandmarks()
-            // .withFaceExpressions()
-          // const resizedDetections = faceapi.resizeResults(detections, displaySize)
           canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-          // faceapi.draw.drawDetections(canvas, resizedDetections)
           if (detections) {
             const ctx = canvas.getContext('2d')
             ctx.drawImage(video, 0, 0, 720, 560)
@@ -130,72 +125,17 @@ export default {
         video.srcObject = null
       })
     },
-    // getVideo () {
-    //   const constraints = { audio: false, video: true }
-    //   const video = document.querySelector('video')
-    //   const canvas = document.querySelector('canvas')
-    //   const context = canvas.getContext('2d')
-    //   let localMediaStream = null
-
-    //   function snapshot () {
-    //     if (localMediaStream) {
-    //       const image = document.querySelector('img')
-    //       context.drawImage(video, 0, 0, 640, 480)
-    //       image.src = canvas.toDataURL('image/png')
-    //     }
-    //   }
-    //   video.addEventListener('click', snapshot, false)
-
-    //   navigator.mediaDevices.getUserMedia(constraints)
-    //     .then(function (stream) {
-    //       // Older browsers may not have srcObject
-    //       if ('srcObject' in video) {
-    //         video.srcObject = stream
-    //         localMediaStream = stream
-    //       } else {
-    //         // Avoid using this in new browsers, as it is going away.
-    //         video.src = window.URL.createObjectURL(stream)
-    //         localMediaStream = stream
-    //       }
-    //       video.onloadedmetadata = function (e) {
-    //         video.play()
-    //       }
-    //       function chkPath () {
-    //         if (window.location.pathname !== '/student/check') {
-    //           video.pause()
-    //           video.src = ''
-    //           localMediaStream.getTracks()[0].stop()
-    //         }
-    //       }
-    //       const btn = document.querySelector('#yes')
-    //       btn.addEventListener('click', chkPath)
-    //     })
-    //     .catch(function (err) {
-    //       alert(err.name + ': ' + err.message)
-    //     })
-    // },
     showTime () {
       const date = new Date()
       let h = date.getHours() // 0 - 23
       let m = date.getMinutes() // 0 - 59
       let s = date.getSeconds() // 0 - 59
-      // let session = 'AM'
-
-      // if (h === 0) {
-      //   h = 12
-      // }
-
-      // if (h > 12) {
-      //   h = h - 12
-      //   session = 'PM'
-      // }
 
       h = (h < 10) ? '0' + h : h
       m = (m < 10) ? '0' + m : m
       s = (s < 10) ? '0' + s : s
 
       const time = h + ':' + m + ':' + s + ' '
-      // const time = h + ':' + m + ':' + s + ' ' + session
       document.getElementById('ClockDisplay').textContent = time
 
       setTimeout(this.showTime, 1000)
@@ -232,7 +172,6 @@ export default {
   color: #ffffff;
   font-size: 65pt;
   font-family: 'Helvetica';
-  /* letter-spacing: 3px; */
 }
 
 .describe{

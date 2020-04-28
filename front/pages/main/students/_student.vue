@@ -16,6 +16,8 @@
       <v-col cols="8">{{ studentData.name }}의 기록</v-col>
     </v-row>
     {{ studentData }}
+    <br>
+    {{ bb }}
   </div>
 </template>
 
@@ -30,7 +32,8 @@ export default {
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     months.length = month
     const studentData = await $axios.$get(`/api/checks/month/student/${studentId}/${year}/${month}`)
-    return { year, month, studentData: studentData[0], months }
+    const bb = studentData
+    return { year, month, studentData: studentData[0], months, bb }
   },
   mounted () {
     this.selectMonth = this.month
@@ -39,7 +42,9 @@ export default {
     selectMonth () {
       this.$axios.$get(`/api/checks/month/student/${this.studentData.student_id}/${this.year}/${this.selectMonth}`)
         .then((response) => {
-          this.studentData = response.data[0]
+          const temp = response.data
+          console.log(temp)
+          this.studentData = temp[0]
         })
     }
   },
