@@ -266,13 +266,16 @@ def check_on_month_all(request, pk1, pk2):
     """
         월별 교육생 출결정보 상세목록(전체) (year, month)
     """
-    accounts = Account.objects.order_by('stage', 'region', 'classes', 'name')
+    accounts = Account.objects.all().order_by('stage', 'region', 'classes', 'name')
     students = []
     for acc in range(len(accounts)):
+        stage = accounts.values('stage')[acc]['stage']
+        region = accounts.values('region')[acc]['region']
+        classes = accounts.values('classes')[acc]['classes']
         student_id = accounts.values('student_id')[acc]['student_id']
         name = accounts.values('name')[acc]['name']
-        if [student_id, name] not in students:
-            students.append([student_id, name])
+        if [student_id, name, stage, region, classes] not in students:
+            students.append([student_id, name, stage, region, classes])
     datas = []
     for student in students:
         checks = Check.objects.filter(date__year=pk1, date__month=pk2, student_info__student_id=student[0])
@@ -298,6 +301,9 @@ def check_on_month_all(request, pk1, pk2):
             attendance_rate = 0
             education_costs = 0
         data = {
+            'stage': student[2],
+            'region': student[3],
+            'classes': student[4],
             'student_id': student[0],
             'name': student[1],
             'class_days': class_days,
