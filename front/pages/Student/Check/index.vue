@@ -21,6 +21,9 @@
         </v-chip>
       </div>
       <video id="face-video" width="720" height="560" autoplay muted />
+      <div v-for="student in students" :key="student.id">
+        {{ student }}
+      </div>
     </div>
   </div>
 </template>
@@ -29,17 +32,13 @@
 import * as faceapi from 'face-api.js'
 
 export default {
-  asyncData ({ params }) {
-    const campusRoot = params.campus
-
-    return { campusRoot }
-  },
   data: () => {
     return {
       locations: ['서울', '대전', '광주', '구미'],
       stage: ['success', 'warning', 'info'],
       default_campus: [true, false, false, false],
-      selectLocation: 0
+      selectLocation: 0,
+      students: []
     }
   },
   mounted () {
@@ -76,7 +75,6 @@ export default {
       this.default_campus = this.default_campus.map(v => false)
       this.default_campus[v - 1] = true
       this.selectLocation = v - 1
-      console.log(this.selectLocation)
     },
     start () {
       return Promise.all([
@@ -120,7 +118,13 @@ export default {
             formdata.append('region_id', this.selectLocation + 1)
             return this.$axios.$post('/api/recognition/', formdata)
               .then(function (data) {
-                console.log(data)
+                if (data.length >= 1) {
+                  for (let i = 0; i < data.length; i++) {
+                    const element = data[i]
+                    console.log(element[0].name)
+                    this.students.append(element[0].name)
+                  }
+                }
               })
               .catch(e => console.error(e))
           }
@@ -225,7 +229,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .titles {
   font-size: 100pt;
   color: #ffffff;
@@ -266,8 +270,63 @@ canvas {
   background-color: hotpink !important;
   color: white;
 }
+
 .unSelectButton {
   background-color: white !important;
   border: 1px dashed black;
+}
+
+.example-modal-content {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 13px;
+  overflow: auto;
+}
+
+button.btn {
+  outline: none;
+  background: white;
+  border: 0;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-radius: 3px;
+
+  color: white;
+
+  box-shadow: 0 4px 8px rgba(#20a0ff, .3);
+  background: #4db3ff;
+
+  font-weight: 600;
+
+  border-radius: 3px;
+
+  min-width: 90px;
+
+  margin-bottom: 8px;
+  margin-top: 8px;
+  margin-right: 8px;
+
+  &:hover {
+    background: #20a0ff;
+  }
+
+  &.green {
+    box-shadow: 0 4px 8px rgba(#50C9BA, .3);
+    background: #50C9BA;
+
+    &:hover {
+     background: mix(#50C9BA, black, 95%);
+    }
+  }
+
+  &.red {
+    box-shadow: 0 4px 8px rgba(#F21368, .3);
+    background: #F21368;
+
+    &:hover {
+      background: mix(#F21368, black, 95%);
+    }
+  }
 }
 </style>

@@ -30,6 +30,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~plugins/vue-js-modal.js',
     { src: '~plugins/vue-chartjs.js', mode: 'client' }
   ],
   /*

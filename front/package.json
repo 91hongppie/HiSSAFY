@@ -22,12 +22,13 @@
     "chartjs": "^0.3.24",
     "face-api.js": "^0.22.2",
     "nuxt": "^2.0.0",
-    "vue-chartjs": "^3.5.0"
+    "vue-chartjs": "^3.5.0",
+    "vue-js-modal": "^2.0.0-rc.3"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^2.0.0",
     "@nuxtjs/eslint-module": "^1.0.0",
-    "@nuxtjs/vuetify": "^1.11.0",
+    "@nuxtjs/vuetify": "^1.11.2",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.1.0",
     "eslint-plugin-nuxt": ">=0.4.2"
