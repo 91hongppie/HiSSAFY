@@ -18,6 +18,7 @@
       </v-form>
     </div>
     <div>
+      <NuxtChild :key="selectLocation" />
       <v-row>
         <v-col class="text-center font-weight-bold">이름</v-col>
         <v-col class="text-center font-weight-bold">입실 상태</v-col>
@@ -41,41 +42,19 @@
 <script>
 export default {
   layout: 'super',
+  async asyncData ({ $axios }) {
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = today.getMonth() + 1
+    const studentData = await $axios.$get(`/api/checks/month/region/2/${year}/${month}/`)
+    return { studentData }
+  },
   data () {
     return {
       locations: ['서울', '대전', '광주', '구미'],
       default_campus: [true, false, false, false],
       selectLocation: 0,
-      searchName: '',
-      students: [
-        {
-          id: '0233100',
-          name: '홍길동',
-          mark: 1,
-          intime: '08:11:20',
-          outtime: '19:54:34',
-          late: 1,
-          out: 0
-        },
-        {
-          id: '0233101',
-          name: '홍길은',
-          mark: 1,
-          intime: '08:40:50',
-          outtime: '18:00:08',
-          late: 1,
-          out: 1
-        },
-        {
-          id: '0233102',
-          name: '홍길금',
-          mark: 1,
-          intime: '08:59:20',
-          outtime: '18:00:03',
-          late: 2,
-          out: 2
-        }
-      ]
+      searchName: ''
     }
   },
   watch: {
