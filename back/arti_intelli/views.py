@@ -262,11 +262,11 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
 
 
 @api_view(['GET'])
-def check_on_month_region(request, pk1, pk2, pk3):
+def check_on_month_all(request, pk1, pk2):
     """
-        월별 교육생 출결정보 상세목록(지역) (region, year, month)
+        월별 교육생 출결정보 상세목록(전체) (year, month)
     """
-    accounts = Account.objects.filter(region=pk1).order_by('stage', 'classes', 'name')
+    accounts = Account.objects.order_by('stage', 'region', 'classes', 'name')
     students = []
     for acc in range(len(accounts)):
         student_id = accounts.values('student_id')[acc]['student_id']
@@ -275,11 +275,11 @@ def check_on_month_region(request, pk1, pk2, pk3):
             students.append([student_id, name])
     datas = []
     for student in students:
-        checks = Check.objects.filter(date__year=pk2, date__month=pk3, student_info__student_id=student[0])
+        checks = Check.objects.filter(date__year=pk1, date__month=pk2, student_info__student_id=student[0])
         class_days = 0
         not_attend_day = 0
         for day in range(1, 32):
-            class_day = Check.objects.filter(date__year=pk2, date__month=pk3, date__day=day)
+            class_day = Check.objects.filter(date__year=pk1, date__month=pk2, date__day=day)
             if class_day:
                 class_days += 1
                 if not checks.filter(date__day=day):
@@ -537,7 +537,7 @@ def in_calling(request):
     """
         입실 클릭
     """
-    student_id = '0233100'
+    student_id = '0233001'
     students = Account.objects.filter(student_id=student_id)
     student = AccountSerializer(students, many=True).data[0]['id']
     checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
@@ -556,7 +556,7 @@ def out_calling(request):
     """
         퇴실 클릭
     """
-    student_id = '0233100'
+    student_id = '0233001'
     checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
     if checks:
         if datetime.now().time() >= '18:00:00':
