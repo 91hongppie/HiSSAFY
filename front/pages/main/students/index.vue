@@ -29,7 +29,7 @@ export default {
     return {
       students: [
         {
-          id: 1,
+          id: '0233100',
           name: '홍길동',
           mark: 1,
           intime: '08:11:20',
@@ -38,7 +38,7 @@ export default {
           out: 0
         },
         {
-          id: 2,
+          id: '0233101',
           name: '홍길은',
           mark: 1,
           intime: '08:40:50',
@@ -47,7 +47,7 @@ export default {
           out: 1
         },
         {
-          id: 1,
+          id: '0233102',
           name: '홍길금',
           mark: 1,
           intime: '08:59:20',
