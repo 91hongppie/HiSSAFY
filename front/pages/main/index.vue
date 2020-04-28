@@ -36,14 +36,14 @@
             <h3 class="gugi-30">출석 안 한 사람 <v-chip dark class="jua" :class="{ 'red': selectedData[st][cl]['uncheck'].length > 20, 'green' : selectedData[st][cl]['uncheck'].length > 4 && selectedData[st][cl]['uncheck'].length <= 20, 'blue': selectedData[st][cl]['uncheck'].length >= 0 && selectedData[st][cl]['uncheck'].length <= 4 }">{{ selectedData[st][cl]['uncheck'].length }}명</v-chip></h3>
             <div class="yetList">
               <v-row v-for="num in (Math.ceil(selectedData[st][cl]['uncheck'].length / 8))" :key="num">
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8] }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 1] }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 2] }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 3] }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 4] }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 5] }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 6] }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 7] }}</v-col>
+                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8].name }}</v-col>
+                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 1] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 1].name : '' }}</v-col>
+                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 2] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 2].name : '' }}</v-col>
+                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 3] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 3].name : '' }}</v-col>
+                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 4] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 4].name : '' }}</v-col>
+                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 5] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 5].name : '' }}</v-col>
+                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 6] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 6].name : '' }}</v-col>
+                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 7] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 7].name : '' }}</v-col>
               </v-row>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default {
       locations: ['서울', '대전', '광주', '구미'],
       stage: ['success', 'warning', 'info'],
       default_campus: [true, false, false, false],
-      selectLocation: 1
+      selectLocation: 0
     }
   },
   computed: {
@@ -140,7 +140,7 @@ export default {
   margin-top: 50px;
 }
 .selectButton {
-  background-color: hotpink !important;
+  background-color: #2196f3 !important;
   color: white;
 }
 .unSelectButton {
