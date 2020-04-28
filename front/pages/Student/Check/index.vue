@@ -21,9 +21,6 @@
         </v-chip>
       </div>
       <video id="face-video" width="720" height="560" autoplay muted />
-      <div v-for="student in students" :key="student.id">
-        {{ student }}
-      </div>
     </div>
   </div>
 </template>
@@ -37,8 +34,7 @@ export default {
       locations: ['서울', '대전', '광주', '구미'],
       stage: ['success', 'warning', 'info'],
       default_campus: [true, false, false, false],
-      selectLocation: 0,
-      students: []
+      selectLocation: 0
     }
   },
   mounted () {
@@ -119,13 +115,7 @@ export default {
             formdata.append('region_id', this.selectLocation + 1)
             return this.$axios.$post('/api/recognition/', formdata)
               .then(function (data) {
-                if (data.length >= 1) {
-                  for (let i = 0; i < data.length; i++) {
-                    const element = data[i]
-                    console.log(element[0].name)
-                    this.students.append(element[0].name)
-                  }
-                }
+                console.log(data)
               })
               .catch(e => console.error(e))
           }
