@@ -10,23 +10,12 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # use this when mysql is the basic db
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'ai',
-#         'USER': 'root',
-#         'PASSWORD': '1324adsf',
-#         'HOST': '127.0.0.1',
-#         'PORT': '3306'
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ai',
         'USER': 'root',
-        'PASSWORD': 'dudnquf@102',
+        'PASSWORD': '1324adsf',
         'HOST': '127.0.0.1',
         'PORT': '3306'
     }
