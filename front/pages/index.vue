@@ -4,7 +4,7 @@
       <!-- <h1 class="name text-center">
         <span class="colored">H<span class="exclamation">!</span></span>SSAFY
       </h1> -->
-      <img src="../components/hissafyv3.png" alt="HI SSAFY LOGO" class="mt-5">
+      <img src="../components/hissafyv4.png" alt="HI SSAFY LOGO" class="mt-5 logo">
     </header>
     <div class="admin-btn text-center">
       <v-btn class="justify-center" color="warning" to="/main">
@@ -62,6 +62,10 @@ export default {
 </script>
 
 <style scoped>
+.logo {
+  width: 30%;
+}
+
 .clock {
   position: relative;
   /* top: 50%;
