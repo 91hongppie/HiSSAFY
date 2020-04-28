@@ -11,10 +11,10 @@
 
 <script>
 export default {
-  method: {
-    move () {
-      setTimeout(this.$router.push('/'), 1000)
-    }
+  computed () {
+    setTimeout(this.$router.push('/'), 1000)
+  },
+  methods: {
   }
 }
 </script>
