@@ -289,8 +289,8 @@ def check_on_month_one(request, pk1, pk2, pk3):
         attendance_rate = int('{:.0f}'.format(((class_days - not_attend_day) / class_days) * 100))
         education_costs = int('{:.0f}'.format(((class_days - Disallow_absent_day - allow_absent_day) / class_days) * 1000000))
     except ZeroDivisionError:
-        attendance_rate = 0
-        education_costs = 0
+        attendance_rate = '0'
+        education_costs = '0'
     data = {
         'student_id': student_id,
         'name': name,
