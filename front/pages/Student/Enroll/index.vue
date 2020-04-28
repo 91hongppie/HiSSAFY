@@ -55,8 +55,7 @@ export default {
     this.getVideo()
   },
   beforeLeave (to, from, next) {
-    this.videoOff()
-    next()
+    document.querySelector('video').pause()
   },
   methods: {
     dataURItoBlob (dataURI) {
@@ -109,26 +108,18 @@ export default {
           video.onloadedmetadata = function (e) {
             video.play()
           }
-          function chkPath () {
-            if (window.location.pathname !== '/student/check') {
-              video.pause()
-              video.src = ''
-              localMediaStream.getTracks()[0].stop()
-            }
-          }
-          const btn = document.querySelector('#yes')
-          btn.addEventListener('click', chkPath)
+          video.addEventListener('pause', () => {
+            const stream = video.srcObject
+            const tracks = stream.getTracks()
+            tracks.forEach(function (track) {
+              track.stop()
+            })
+            video.srcObject = null
+          })
         })
         .catch(function (err) {
           alert(err.name + ': ' + err.message)
         })
-    },
-    videoOff () {
-      const monitor = document.querySelector('video')
-      monitor.pause()
-      monitor.src = ''
-      // localstream.getTracks()[0].stop()
-      alert('Video off')
     },
     showTime () {
       const date = new Date()

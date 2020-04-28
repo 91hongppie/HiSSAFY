@@ -48,8 +48,9 @@ export default {
     // this.getVideo()
   },
   beforeLeave (to, from, next) {
-    this.videoOff()
-    next()
+    // this.videoOff()
+    // next()
+    document.querySelector('video').pause()
   },
   methods: {
     dataURItoBlob (dataURI) {
@@ -120,11 +121,19 @@ export default {
             formdata.append('region_id', this.selectLocation + 1)
             return this.$axios.$post('/api/recognition/', formdata)
               .then(function (data) {
-                console.log(data)
+                console.log(`data: ${data}`)
               })
               .catch(e => console.error(e))
           }
         }, 2000)
+      })
+      video.addEventListener('pause', () => {
+        const stream = video.srcObject
+        const tracks = stream.getTracks()
+        tracks.forEach(function (track) {
+          track.stop()
+        })
+        video.srcObject = null
       })
     },
     // getVideo () {
@@ -171,13 +180,6 @@ export default {
     //       alert(err.name + ': ' + err.message)
     //     })
     // },
-    videoOff () {
-      const monitor = document.querySelector('video')
-      monitor.pause()
-      monitor.src = ''
-      // localstream.getTracks()[0].stop()
-      alert('Video off')
-    },
     showTime () {
       const date = new Date()
       let h = date.getHours() // 0 - 23
