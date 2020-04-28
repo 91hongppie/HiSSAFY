@@ -15,7 +15,10 @@
       </v-col>
       <v-col cols="8">{{ studentData.name }}의 기록</v-col>
     </v-row>
-    {{ studentData }}
+    {{ studentData.student_id }}
+    {{ studentData.name }}
+    {{ studentData.class_days }}
+    {{ studentData.attend_day }}
     <br>
     {{ bb }}
   </div>
@@ -23,7 +26,7 @@
 
 <script>
 export default {
-  layout: 'admin',
+  layout: 'super',
   async asyncData ({ params, $axios }) {
     const studentId = params.student
     const today = new Date()
@@ -41,10 +44,8 @@ export default {
   watch: {
     selectMonth () {
       this.$axios.$get(`/api/checks/month/student/${this.studentData.student_id}/${this.year}/${this.selectMonth}`)
-        .then((response) => {
-          const temp = response.data
-          console.log(temp)
-          this.studentData = temp[0]
+        .then((responseData) => {
+          this.studentData = responseData[0]
         })
     }
   },
