@@ -237,8 +237,8 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
         allow_absent_day = 0
         Disallow_absent_day = not_attend_day-allow_absent_day-public_vacation_day
         try:
-            attendance_rate = '{:.0f}'.format(((class_days - not_attend_day) / class_days) * 100)
-            education_costs = '{:.0f}'.format(((class_days - Disallow_absent_day - allow_absent_day) / class_days) * 1000000)
+            attendance_rate = int('{:.0f}'.format(((class_days - not_attend_day) / class_days) * 100))
+            education_costs = int('{:.0f}'.format(((class_days - Disallow_absent_day - allow_absent_day) / class_days) * 1000000))
         except ZeroDivisionError:
             attendance_rate = 0
             education_costs = 0
@@ -286,8 +286,8 @@ def check_on_month_one(request, pk1, pk2, pk3):
     allow_absent_day = 0
     Disallow_absent_day = not_attend_day-allow_absent_day-public_vacation_day
     try:
-        attendance_rate = '{:.0f}'.format(((class_days - not_attend_day) / class_days) * 100)
-        education_costs = '{:.0f}'.format(((class_days - Disallow_absent_day - allow_absent_day) / class_days) * 1000000)
+        attendance_rate = int('{:.0f}'.format(((class_days - not_attend_day) / class_days) * 100))
+        education_costs = int('{:.0f}'.format(((class_days - Disallow_absent_day - allow_absent_day) / class_days) * 1000000))
     except ZeroDivisionError:
         attendance_rate = 0
         education_costs = 0
