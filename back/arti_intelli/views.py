@@ -262,6 +262,61 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
 
 
 @api_view(['GET'])
+def check_on_month_region(request, pk1, pk2, pk3):
+    """
+        월별 교육생 출결정보 상세목록(지역) (region, year, month)
+    """
+    accounts = Account.objects.filter(region=pk1).order_by('stage', 'classes', 'name')
+    students = []
+    for acc in range(len(accounts)):
+        student_id = accounts.values('student_id')[acc]['student_id']
+        name = accounts.values('name')[acc]['name']
+        if [student_id, name] not in students:
+            students.append([student_id, name])
+    datas = []
+    for student in students:
+        checks = Check.objects.filter(date__year=pk2, date__month=pk3, student_info__student_id=student[0])
+        class_days = 0
+        not_attend_day = 0
+        for day in range(1, 32):
+            class_day = Check.objects.filter(date__year=pk2, date__month=pk3, date__day=day)
+            if class_day:
+                class_days += 1
+                if not checks.filter(date__day=day):
+                    not_attend_day += 1
+        come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
+        early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
+        normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
+        attend_day = class_days - not_attend_day
+        public_vacation_day = 0
+        allow_absent_day = 0
+        Disallow_absent_day = not_attend_day-allow_absent_day-public_vacation_day
+        try:
+            attendance_rate = int('{:.0f}'.format(((class_days - not_attend_day) / class_days) * 100))
+            education_costs = int('{:.0f}'.format(((class_days - Disallow_absent_day - allow_absent_day) / class_days) * 1000000))
+        except ZeroDivisionError:
+            attendance_rate = 0
+            education_costs = 0
+        data = {
+            'student_id': student[0],
+            'name': student[1],
+            'class_days': class_days,
+            'attend_day': attend_day,
+            'normal_attend_day': normal_attend_day,
+            'come_late_cnt': come_late_cnt,
+            'early_left_cnt': early_left_cnt,
+            'not_attend_day': not_attend_day,
+            'public_vacation_day': public_vacation_day,
+            'allow_absent_day': allow_absent_day,
+            'Disallow_absent_day': Disallow_absent_day,
+            'attendance_rate': attendance_rate,
+            'education_costs': education_costs
+        }
+        datas.append(data)
+    return Response(datas)
+
+
+@api_view(['GET'])
 def check_on_month_one(request, pk1, pk2, pk3):
     """
         월별 교육생 출결정보 상세목록(개인) (student_id, year, month)
