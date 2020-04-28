@@ -1,28 +1,28 @@
 <template>
   <div>
-    <v-form class="d-flex">
-      <v-row>
-        <v-col cols="3">
+    <v-form class="d-flex justify-center">
+      <v-row class="jua pl-12 ml-12">
+        <v-col>
           <v-select
-            v-model="selectedLoca"
+            v-model="selectClass.location"
             :items="loca"
             label="지역"
             outlined
             dense
           />
         </v-col>
-        <v-col cols="3">
+        <v-col>
           <v-select
-            v-model="selectedStag"
+            v-model="selectClass.stage"
             :items="stag"
             label="기수"
             outlined
             dense
           />
         </v-col>
-        <v-col cols="3">
+        <v-col>
           <v-select
-            v-model="selectedClas"
+            v-model="selectClass.classNumber"
             :items="clas"
             label="반"
             outlined
@@ -30,24 +30,21 @@
           />
         </v-col>
         <v-col>
-          <v-btn :to="`/main/classes/${selectedStag}n${selectedLoca}n${selectedClas}/`">
-            검색
+          <v-btn :to="`/main/classes/${selectClass.stage}n${selectClass.location}n${selectClass.classNumber}`">
+            확인
           </v-btn>
         </v-col>
       </v-row>
     </v-form>
     <div>
-      <nuxt />
+      <NuxtChild :key="$route.params.class" />
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  layout: 'admin',
-  asyncData () {
-
-  },
+  layout: 'super',
   data () {
     return {
       loca: [
@@ -69,10 +66,12 @@ export default {
         }],
       stag: [1, 2, 3],
       clas: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      selectedStag: null,
-      selectedLoca: null,
-      selectedClas: null,
-      classData: null
+      selectClass: {
+        stage: null,
+        location: null,
+        classNumber: null
+      },
+      classData: [false, []]
     }
   }
 }
@@ -81,5 +80,15 @@ export default {
 <style scoped>
 div {
   padding: 10px;
+}
+.gugi-30 {
+  font-family: 'Gugi', cursive;
+  font-size: 30px;
+}
+.nanumG {
+  font-family: 'Nanum Gothic', sans-serif;
+}
+.jua {
+  font-family: 'Jua', sans-serif;
 }
 </style>

@@ -8,12 +8,20 @@
           <v-col class="font-weight-bold">입실시간</v-col>
           <v-col class="font-weight-bold">퇴실시간</v-col>
           <v-col class="font-weight-bold">상태</v-col>
+          <v-col class="font-weight-bold">이름</v-col>
+          <v-col class="font-weight-bold">입실시간</v-col>
+          <v-col class="font-weight-bold">퇴실시간</v-col>
+          <v-col class="font-weight-bold">상태</v-col>
         </v-row>
-        <v-row v-for="student in classData" :key="student.student_id" class="underlineBody">
-          <v-col>{{ student.name }}</v-col>
-          <v-col>{{ student.in_time? student.in_time : '-' }}</v-col>
-          <v-col>{{ student.out_time? student.out_time : '-' }}</v-col>
-          <v-col>{{ setStat(student.is_late, student.is_early, student.status) }}</v-col>
+        <v-row v-for="studentIndex in Math.ceil(classData.length / 2)" :key="studentIndex" class="underlineBody">
+          <v-col>{{ classData[(studentIndex - 1) * 2].name }}</v-col>
+          <v-col>{{ classData[(studentIndex - 1) * 2].in_time ? classData[(studentIndex - 1) * 2].in_time : '-' }}</v-col>
+          <v-col>{{ classData[(studentIndex - 1) * 2].out_time ? classData[(studentIndex - 1) * 2].out_time : '-' }}</v-col>
+          <v-col>{{ setStat(classData[(studentIndex - 1) * 2].is_late, classData[(studentIndex - 1) * 2].is_early, classData[(studentIndex - 1) * 2].status) }}</v-col>
+          <v-col>{{ classData.length > studentIndex * 2 - 1 ? (classData[(studentIndex * 2) - 1].name ? classData[(studentIndex * 2) - 1].name : '-' ) : '' }}</v-col>
+          <v-col>{{ classData.length > studentIndex * 2 - 1 ? (classData[(studentIndex * 2) - 1].in_time ? classData[(studentIndex * 2) - 1].in_time : '-' ) : '-' }}</v-col>
+          <v-col>{{ classData.length > studentIndex * 2 - 1 ? (classData[(studentIndex * 2) - 1].out_time ? classData[(studentIndex * 2) - 1].out_time : '-' ) :'-' }}</v-col>
+          <v-col>{{ classData.length > studentIndex * 2 - 1 ? setStat(classData[(studentIndex * 2) - 1].is_late, classData[(studentIndex * 2) - 1].is_early, classData[(studentIndex * 2) - 1].status) : '' }}</v-col>
         </v-row>
       </div>
     </div>
@@ -22,12 +30,11 @@
 
 <script>
 export default {
-  layout: 'admin',
+  layout: 'super',
   async asyncData ({ params, $axios }) {
     // 기수, 지역, 반
     const classRoot = params.class.split('n')
     const classData = await $axios.$get(`/api/checks/daily/${classRoot[0]}/${classRoot[1]}/${classRoot[2]}`)
-
     return { classData, classRoot }
   },
   data () {
@@ -58,13 +65,14 @@ export default {
 
 <style scoped>
 div {
-  margin: 5px 20px;
+  margin: 5px 15px;
+}
+div.col {
+  margin: 0;
 }
 .noteStyle {
-  margin-top: 20px;
-  padding-top: 15px;
-  padding-bottom: 20px;
-  background-color: rgb(255, 233, 143);
+  padding-top: 10px;
+  padding-bottom: 10px;
   border-radius: 5px;
 }
 .gugi-30 {

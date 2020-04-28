@@ -1,6 +1,6 @@
 <template>
   <div class="jua">
-    <div class="locationSelect">
+    <div class="locationSelect d-flex justify-center">
       <v-chip
         v-for="lo in locations.length"
         :key="lo"
@@ -55,7 +55,7 @@
 
 <script>
 export default {
-  layout: 'admin',
+  layout: 'super',
   async asyncData ({ $axios }) {
     const daily = await $axios.$get('/api/checks/')
     const chartData = {
