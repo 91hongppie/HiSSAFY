@@ -1,6 +1,84 @@
 <template>
   <div>
-    <v-container v-for="student in resultList" :key="student.id" class="text-center studentCard">
+    <v-container v-if="resultList.length === 1">
+      <v-row>
+        <v-col>
+          {{ locations[resultList[0].region] }} {{ resultList[0].stage }}기
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col class="font-weight-bold">
+          이름
+        </v-col>
+        <v-col>
+          {{ resultList[0].name }}
+        </v-col>
+      </v-row>
+
+      <v-row class="text-center">
+        <v-col class="font-weight-bold">
+          출석률 (%)
+        </v-col>
+        <v-col>
+          {{ resultList[0].attendance_rate }}
+        </v-col>
+      </v-row>
+
+      <v-row class="text-center">
+        <v-col class="font-weight-bold">
+          평균 입실시간
+        </v-col>
+        <v-col>
+          {{ resultList[0].intime }}
+        </v-col>
+      </v-row>
+
+      <v-row class="text-center">
+        <v-col class="font-weight-bold">
+          평균 퇴실시간
+        </v-col>
+        <v-col>
+          {{ resultList[0].outtime }}
+        </v-col>
+      </v-row>
+
+      <v-row class="text-center">
+        <v-col class="font-weight-bold">
+          지각 (회)
+        </v-col>
+        <v-col>
+          {{ resultList[0].come_late_cnt }}
+        </v-col>
+      </v-row>
+
+      <v-row class="text-center">
+        <v-col class="font-weight-bold">
+          조퇴 (회)
+        </v-col>
+        <v-col>
+          {{ resultList[0].early_left_cnt }}
+        </v-col>
+      </v-row>
+
+      <v-row class="text-center">
+        <v-col class="font-weight-bold">
+          사유 결석 (회)
+        </v-col>
+        <v-col>
+          {{ resultList[0].allow_absent_day }}
+        </v-col>
+      </v-row>
+
+      <v-row class="text-center">
+        <v-col class="font-weight-bold">
+          임의 결석 (회)
+        </v-col>
+        <v-col>
+          {{ resultList[0].Disallow_absent_day }}
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-container v-else v-for="student in resultList" :key="student.id" class="text-center studentCard">
       <v-row>
         <v-col>
           {{ locations[student.region] }} {{ student.stage }}기
