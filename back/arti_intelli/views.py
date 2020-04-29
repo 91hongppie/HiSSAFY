@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.response import Response
 from .models import Campus, Account, Check, AccountImage
 from .serializers import CampusSerializer, AccountSerializer, CheckSerializer, AccountImageSerializer
@@ -10,19 +10,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from datetime import datetime, date, time
 from django.db.models import Count, Avg
+import numpy as np
+from numpy import genfromtxt
+import face_recognition as fr
+import cv2
+import json
+from json import JSONEncoder
 from rest_framework.parsers import MultiPartParser, FileUploadParser
 from matplotlib import pyplot as plt
 from PIL import Image, ImageEnhance
 from io import BytesIO
 # from gpuinfo import GPUInfo
-import numpy as np
-from numpy import genfromtxt
-import face_recognition as fr
-import json
-from json import JSONEncoder
 # import pandas as pd
 import csv
-import cv2
 import ast
 
 
@@ -36,7 +36,7 @@ class NumpyArrayEncoder(JSONEncoder):
 
 class Recognition(APIView):
     """
-        얼굴 인식
+        얼굴 인식, 입실/퇴실 체크
     """
     def post(self, request):
         data_list = []
@@ -74,10 +74,11 @@ class Recognition(APIView):
                     datas[account_student_id].append(unknown_face[0].tolist())
                     with open(f'data/accounts_{region}.json', 'w', encoding='utf-8') as accounts:
                         json.dump(datas, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
+                
                 student_id = account_student_id
+                checks = Check.objects.filter(date=date.today(), student_info_id=student)
                 students = Account.objects.filter(student_id=student_id)
                 student = AccountSerializer(students[0]).data['id']
-                checks = Check.objects.filter(date=date.today(), student_info_id=student)
                 if not checks:
                     status = cv2.imwrite(f'in_pic/{region_id}/{date.today()}_{student_id}.jpg', image1)
                     if now < in_time:
@@ -275,6 +276,8 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
                 class_days += 1
                 if not checks.filter(date__day=day):
                     not_attend_day += 1
+                if checks.filter(date__day=day).values('status')[0]['status'] == 0:
+                    not_attend_day += 1
         come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
         early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
         normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
@@ -333,6 +336,8 @@ def check_on_month_all(request, pk1, pk2):
                 class_days += 1
                 if not checks.filter(date__day=day):
                     not_attend_day += 1
+                if checks.filter(date__day=day).values('status')[0]['status'] == 0:
+                    not_attend_day += 1
         come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
         early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
         normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
@@ -384,6 +389,8 @@ def check_on_month_one(request, pk1, pk2, pk3):
         if class_day:
             class_days += 1
             if not checks.filter(date__day=day):
+                not_attend_day += 1
+            if checks.filter(date__day=day).values('status')[0]['status'] == 0:
                 not_attend_day += 1
     come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
     early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
@@ -582,3 +589,4 @@ def classes_attendance(request, pk1, pk2, pk3):
     data = {'avg_attendance_rate': '{:.0f}'.format(avg_attendance_rate)}
     datas.append(data)
     return Response(datas)
+
