@@ -245,7 +245,7 @@ def check_on(request):
         else:
             if not datas[account.region.id][account.stage].get(account.classes):
                 datas[account.region.id][account.stage][account.classes] = {'members': 0, 'check': [], 'uncheck': []}
-        if Check.objects.filter(date__year=date.today().year, date__month=date.today().month, date__day=date.today().day, student_info=account.id):
+        if Check.objects.filter(date=date.today(), status=1, student_info=account.id):
             datas[account.region.id][account.stage][account.classes]['check'].append({'student_id': account.student_id, 'name':account.name})
         else:
             datas[account.region.id][account.stage][account.classes]['uncheck'].append({'student_id': account.student_id, 'name':account.name})
@@ -291,6 +291,18 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
         except ZeroDivisionError:
             attendance_rate = 0
             education_costs = 0
+        avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
+        if len(avg_in_time1[:-4]) == 2:
+            avg_in_time2 = avg_in_time1[:-4]
+        else:
+            avg_in_time2 = '0'+avg_in_time1[:-4]
+        avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
+        avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
+        if len(avg_out_time1[:-4]) == 2:
+            avg_out_time2 = avg_out_time1[:-4]
+        else:
+            avg_out_time2 = '0'+avg_out_time1[:-4]
+        avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
         data = {
             'student_id': student[0],
             'name': student[1],
@@ -303,6 +315,8 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
             'public_vacation_day': public_vacation_day,
             'allow_absent_day': allow_absent_day,
             'Disallow_absent_day': Disallow_absent_day,
+            'avg_in_time': avg_in_time,
+            'avg_out_time': avg_out_time,
             'attendance_rate': attendance_rate,
             'education_costs': education_costs
         }
@@ -351,6 +365,18 @@ def check_on_month_all(request, pk1, pk2):
         except ZeroDivisionError:
             attendance_rate = 0
             education_costs = 0
+        avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
+        if len(avg_in_time1[:-4]) == 2:
+            avg_in_time2 = avg_in_time1[:-4]
+        else:
+            avg_in_time2 = '0'+avg_in_time1[:-4]
+        avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
+        avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
+        if len(avg_out_time1[:-4]) == 2:
+            avg_out_time2 = avg_out_time1[:-4]
+        else:
+            avg_out_time2 = '0'+avg_out_time1[:-4]
+        avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
         data = {
             'stage': student[2],
             'region': student[3],
@@ -366,6 +392,8 @@ def check_on_month_all(request, pk1, pk2):
             'public_vacation_day': public_vacation_day,
             'allow_absent_day': allow_absent_day,
             'Disallow_absent_day': Disallow_absent_day,
+            'avg_in_time': avg_in_time,
+            'avg_out_time': avg_out_time,
             'attendance_rate': attendance_rate,
             'education_costs': education_costs
         }
@@ -405,6 +433,18 @@ def check_on_month_one(request, pk1, pk2, pk3):
     except ZeroDivisionError:
         attendance_rate = '0'
         education_costs = '0'
+    avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
+    if len(avg_in_time1[:-4]) == 2:
+        avg_in_time2 = avg_in_time1[:-4]
+    else:
+        avg_in_time2 = '0'+avg_in_time1[:-4]
+    avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
+    avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
+    if len(avg_out_time1[:-4]) == 2:
+        avg_out_time2 = avg_out_time1[:-4]
+    else:
+        avg_out_time2 = '0'+avg_out_time1[:-4]
+    avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
     data = {
         'student_id': student_id,
         'name': name,
@@ -417,6 +457,8 @@ def check_on_month_one(request, pk1, pk2, pk3):
         'public_vacation_day': public_vacation_day,
         'allow_absent_day': allow_absent_day,
         'Disallow_absent_day': Disallow_absent_day,
+        'avg_in_time': avg_in_time,
+        'avg_out_time': avg_out_time,
         'attendance_rate': attendance_rate,
         'education_costs': education_costs
     }
