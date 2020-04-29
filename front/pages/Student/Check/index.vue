@@ -1,10 +1,8 @@
 <template>
   <div class="container" onunload="videoOff()">
-    <!-- <header>
-      <h1 class="titles text-center mb-5">
-        체크하기
-      </h1>
-    </header> -->
+    <div id="goback">
+      <v-btn color="secondary mr-5" @click="goBack()">뒤로가기</v-btn>
+    </div>
     <div>
       <div class="locationSelect">
         <v-chip
@@ -17,10 +15,19 @@
           {{ locations[lo - 1] }}
         </v-chip>
       </div>
-      <div class="text-center">
+      <div class="timer">
         <p id="ClockDisplay" class="clock" />
       </div>
-      <video id="face-video" width="720" height="560" autoplay muted />
+      <div class="video">
+        <video id="face-video" width="640" height="480" autoplay muted />
+        <div class="inCheck">
+          <div v-for="studentName in studentNames[selectLocation].length" :key="studentName.id">
+            {{ studentNames[selectLocation][studentName-1] }}
+            {{ studentIds[selectLocation][studentName-1] }}
+            님이 입실하셨습니다.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,7 +41,16 @@ export default {
       locations: ['서울', '대전', '구미', '광주'],
       stage: ['success', 'warning', 'info'],
       default_campus: [true, false, false, false],
-      selectLocation: 0
+      selectLocation: 0,
+      studentNames: [[], [], [], []],
+      studentIds: [[], [], [], []]
+    }
+  },
+  watch: {
+    studentNames: {
+      deep: true,
+      handler () {
+      }
     }
   },
   mounted () {
@@ -48,6 +64,10 @@ export default {
     document.querySelector('video').pause()
   },
   methods: {
+    goBack () {
+      document.querySelector('video').pause()
+      this.$router.push('/')
+    },
     dataURItoBlob (dataURI) {
       // convert base64/URLEncoded data component to raw binary data held in a string
       let byteString
@@ -102,17 +122,30 @@ export default {
           canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
           if (detections) {
             const ctx = canvas.getContext('2d')
-            ctx.drawImage(video, 0, 0, 720, 560)
+            ctx.drawImage(video, 0, 0, 640, 480)
             const imageURI = canvas.toDataURL('image/jpeg')
             const blob = this.dataURItoBlob(imageURI)
             const formdata = new FormData()
             formdata.append('pic_name', blob)
             formdata.append('region_id', this.selectLocation + 1)
-            return this.$axios.$post('/api/recognition/', formdata)
-              .then(function (data) {
-                console.log(data)
+            this.$axios.$post('/api/recognition/', formdata)
+              .then((data) => {
+                for (let i = 0; i < data.length; i++) {
+                  const element = data[i][0]
+                  console.log(element.region)
+                  if (this.studentNames[element.region - 1].length === 20) {
+                    this.studentNames[element.region - 1] = this.studentNames[element.region - 1].slice(1, this.studentNames[element.region - 1].length)
+                    this.studentIds[element.region - 1] = this.studentIds[element.region - 1].slice(1, this.studentIds[element.region - 1].length)
+                  }
+                  if (!this.studentNames[element.region - 1].includes(element.name)) {
+                    this.studentNames[element.region - 1].push(element.name)
+                    this.studentIds[element.region - 1].push(element.student_id)
+                  }
+                }
               })
               .catch(e => console.error(e))
+            console.log(this.studentNames)
+            console.log(this.studentIds)
           }
         }, 2000)
       })
@@ -139,39 +172,30 @@ export default {
       document.getElementById('ClockDisplay').textContent = time
 
       setTimeout(this.showTime, 1000)
-    },
-    hideShow () {
-      const btns = document.getElementById('btns')
-      const video = document.querySelector('video')
-      if (btns.style.visibility === 'hidden') {
-        btns.style.visibility = 'visible'
-      } else {
-        btns.style.visibility = 'hidden'
-      }
-      if (video.style.visibility === 'hidden') {
-        video.style.visibility = 'visible'
-      } else {
-        video.style.visbiility = 'hidden'
-      }
-    },
-    refresh () {
-      window.location.reload()
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
+#goback {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
 .titles {
   font-size: 100pt;
   color: #ffffff;
 }
 
+.timer {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
 .clock {
   position: absolute;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
   color: #ffffff;
   font-size: 45pt;
   font-family: 'Helvetica';
@@ -180,13 +204,6 @@ export default {
 .describe{
   font-size: 60pt;
   color: #ffffff;
-}
-
-#face-video {
-  width: 100%;
-  height: 78%;
-  justify-content: center;
-  align-items: center;
 }
 
 canvas {
@@ -263,4 +280,51 @@ button.btn {
     }
   }
 }
+
+#goback {
+  display: flex;
+  width: 100%;
+  align-content: center;
+  justify-content: center;
+}
+@media ( min-width: 1050px ) {
+  .video {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+    #face-video {
+    width: 50%;
+    height: 50%;
+  }
+    .inCheck {
+    width: 100%;
+    height: 200px;
+    position: absolute;
+    overflow: auto;
+    margin-left: 20px;
+    color: #ffffff;
+  }
+}
+
+@media ( max-width: 1050px) {
+  .video {
+    width: 100%;
+    justify-content: center;
+  }
+  #face-video {
+    display: block;
+    width: 100%;
+    height: 50%;
+  }
+  .inCheck {
+    width: 100%;
+    height: 200px;
+    overflow: auto;
+    position: relative;
+    margin-left: 20px;
+    color: #ffffff;
+  }
+}
+
 </style>

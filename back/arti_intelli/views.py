@@ -101,7 +101,7 @@ class Recognition(APIView):
                             checks[0].status = 0
                             checks[0].save()
                 accounts = Account.objects.filter(student_id=account_student_id)
-                serializer = AccountSerializer(accounts)
+                serializer = AccountSerializer(accounts, many=True)
                 data_list.append(serializer.data)
         except:
             return Response(data_list)
@@ -117,7 +117,10 @@ class AddAccount(APIView):
         if Account.objects.filter(student_id=student_id):
             return Response('이미 등록된 사용자입니다.', status=status.HTTP_400_BAD_REQUEST)
         image_name = request.FILES['pic_name']
+        print(image_name)
         known_image = fr.load_image_file(image_name)
+        plt.imshow(known_image)
+        plt.show()
         known_image = cv2.add(known_image, np.array([30.0]))
         try:
             top, right, bottom, left = fr.face_locations(known_image)[0]

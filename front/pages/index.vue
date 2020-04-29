@@ -1,15 +1,9 @@
 <template>
   <div id="app" class="blue">
-    <header class="mt-5 text-center">
-      <!-- <h1 class="name text-center">
-        <span class="colored">H<span class="exclamation">!</span></span>SSAFY
-      </h1> -->
-      <img src="../components/hissafyv4.png" alt="HI SSAFY LOGO" class="mt-5 logo">
+    <header class="text-center">
+      <img src="../components/hissafyv4.png" alt="HI SSAFY LOGO" class="logo">
     </header>
     <div class="admin-btn text-center">
-      <v-btn class="justify-center" color="warning" to="/main">
-        Admin Page
-      </v-btn>
     </div>
     <div class="cloc text-center">
       <p id="ClockDisplay" class="clock" />
@@ -49,6 +43,10 @@ export default {
 </script>
 
 <style scoped>
+header {
+  margin-top: 60px;
+}
+
 .logo {
   width: 30%;
 }
