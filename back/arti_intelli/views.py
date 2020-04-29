@@ -308,6 +308,67 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
 
 
 @api_view(['GET'])
+def check_on_month_all(request, pk1, pk2):
+    """
+        월별 교육생 출결정보 상세목록(전체) (year, month)
+    """
+    accounts = Account.objects.all().order_by('stage', 'region', 'classes', 'name')
+    students = []
+    for acc in range(len(accounts)):
+        stage = accounts.values('stage')[acc]['stage']
+        region = accounts.values('region')[acc]['region']
+        classes = accounts.values('classes')[acc]['classes']
+        student_id = accounts.values('student_id')[acc]['student_id']
+        name = accounts.values('name')[acc]['name']
+        if [student_id, name, stage, region, classes] not in students:
+            students.append([student_id, name, stage, region, classes])
+    datas = []
+    for student in students:
+        checks = Check.objects.filter(date__year=pk1, date__month=pk2, student_info__student_id=student[0])
+        class_days = 0
+        not_attend_day = 0
+        for day in range(1, 32):
+            class_day = Check.objects.filter(date__year=pk1, date__month=pk2, date__day=day)
+            if class_day:
+                class_days += 1
+                if not checks.filter(date__day=day):
+                    not_attend_day += 1
+        come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
+        early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
+        normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
+        attend_day = class_days - not_attend_day
+        public_vacation_day = 0
+        allow_absent_day = 0
+        Disallow_absent_day = not_attend_day-allow_absent_day-public_vacation_day
+        try:
+            attendance_rate = int('{:.0f}'.format(((class_days - not_attend_day) / class_days) * 100))
+            education_costs = int('{:.0f}'.format(((class_days - Disallow_absent_day - allow_absent_day) / class_days) * 1000000))
+        except ZeroDivisionError:
+            attendance_rate = 0
+            education_costs = 0
+        data = {
+            'stage': student[2],
+            'region': student[3],
+            'classes': student[4],
+            'student_id': student[0],
+            'name': student[1],
+            'class_days': class_days,
+            'attend_day': attend_day,
+            'normal_attend_day': normal_attend_day,
+            'come_late_cnt': come_late_cnt,
+            'early_left_cnt': early_left_cnt,
+            'not_attend_day': not_attend_day,
+            'public_vacation_day': public_vacation_day,
+            'allow_absent_day': allow_absent_day,
+            'Disallow_absent_day': Disallow_absent_day,
+            'attendance_rate': attendance_rate,
+            'education_costs': education_costs
+        }
+        datas.append(data)
+    return Response(datas)
+
+
+@api_view(['GET'])
 def check_on_month_one(request, pk1, pk2, pk3):
     """
         월별 교육생 출결정보 상세목록(개인) (student_id, year, month)
@@ -521,31 +582,3 @@ def classes_attendance(request, pk1, pk2, pk3):
     data = {'avg_attendance_rate': '{:.0f}'.format(avg_attendance_rate)}
     datas.append(data)
     return Response(datas)
-
-
-@api_view(['POST'])
-def calling(request):
-    """
-        입/퇴실 클릭
-    """
-    print(request.data)
-    student_id = request.data['student_id']
-    students = Account.objects.filter(student_id=student_id)
-    student = AccountSerializer(students, many=True).data[0]['id']
-    checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
-    if not checks:
-        if datetime.now().time() < '09:00:00':
-            Check.objects.create(date=date.today(), in_time=datetime.now().time(), status='1', student_info=Account.objects.get(id=student))
-        else:
-            Check.objects.create(date=date.today(), in_time=datetime.now().time(), is_late=True, status='1', student_info=Account.objects.get(id=student))
-    else:
-        if datetime.now().time() >= '18:00:00':
-            checks.update(out_time=datetime.now().time(), is_early_left=False)
-        else:
-            if datetime.now().time() >= '14:00:00':
-                checks.update(out_time=datetime.now().time(), is_early_left=True)
-            else:
-                checks.update(out_time=datetime.now().time(), status=0)
-    checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
-    serializers = CheckSerializer(checks, many=True)
-    return Response(serializers.data)
