@@ -4,9 +4,9 @@
       <nav>
         <v-btn to="/" text class="title white--text"><span class="display-2"><span class="ssafy-blue">HI</span>SSAFY</span></v-btn>
         <span class="menu">
-          <v-btn to="/main" text class="menu-button white--text title">대시보드</v-btn>
-          <v-btn to="/main/classes" text class="menu-button white--text title">반별 현황</v-btn>
-          <v-btn to="/main/students" text class="menu-button white--text title">개인별 현황</v-btn>
+          <nuxt-link to="/main" text class="menu-button white--text title non-a">대시보드</nuxt-link>
+          <nuxt-link to="/main/classes" text class="menu-button white--text title non-a">반별 현황</nuxt-link>
+          <nuxt-link to="/main/students" text class="menu-button white--text title non-a">개인별 현황</nuxt-link>
         </span>
       </nav>
       <section>
@@ -63,5 +63,9 @@ section {
 .title {
   text-align: center;
   font-size: 40px;
+}
+.non-a {
+  text-decoration: none;
+  font-family: 'Nanum Gothic', serif;
 }
 </style>
