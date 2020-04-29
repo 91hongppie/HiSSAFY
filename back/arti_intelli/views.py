@@ -350,8 +350,9 @@ def check_on_month_all(request, pk1, pk2):
                 class_days += 1
                 if not checks.filter(date__day=day):
                     not_attend_day += 1
-                if checks.filter(date__day=day).values('status')[0]['status'] == 0:
-                    not_attend_day += 1
+                else:
+                    if checks.filter(date__day=day).values('status')[0]['status'] == 0:
+                        not_attend_day += 1
         come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
         early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
         normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
