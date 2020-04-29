@@ -25,7 +25,7 @@
           평균 입실시간
         </v-col>
         <v-col>
-          {{ resultList[0].intime }}
+          {{ resultList[0].avg_in_time }}
         </v-col>
       </v-row>
 
@@ -34,7 +34,7 @@
           평균 퇴실시간
         </v-col>
         <v-col>
-          {{ resultList[0].outtime }}
+          {{ resultList[0].avg_out_time }}
         </v-col>
       </v-row>
 
@@ -77,6 +77,7 @@
 
     <!-- 1명 이상일 때 -->
     <v-container v-else class="text-center">
+      <h1 class="text-center jua-20">세부적인 내용은 이름을 클릭해서 확인하세요</h1>
       <v-row v-for="studentIndex in Math.ceil(resultList.length / 2)" :key="studentIndex" row-height="200px">
         <v-col cols="6">
           <v-container class="studentCard jua-20" height="200px">
@@ -84,7 +85,9 @@
               <v-chip color="blue lighten-2" dark class="mr-5">
                 {{ locations[resultList[(studentIndex - 1) * 2].region] }} {{ resultList[(studentIndex - 1) * 2].stage }}기
               </v-chip>
-              {{ resultList[(studentIndex - 1) * 2].name }}
+              <v-btn class="jua-25" text :to="`/main/students/${resultList[(studentIndex - 1) * 2].region}&${resultList[(studentIndex - 1) * 2].name}`" :key="`${resultList[(studentIndex - 1) * 2].region}&${resultList[(studentIndex - 1) * 2].name}`">
+                {{ resultList[(studentIndex - 1) * 2].name }}
+              </v-btn>
             </v-row>
             <v-row>
               <v-col class="d-flex flex-column justify-space-between">
@@ -122,7 +125,9 @@
               <v-chip color="blue lighten-2" dark class="mr-5">
                 {{ locations[resultList[(studentIndex - 1) * 2 + 1].region] }} {{ resultList[(studentIndex - 1) * 2 + 1].stage }}기
               </v-chip>
-              {{ resultList[(studentIndex - 1) * 2 + 1].name }}
+              <v-btn class="jua-25" text :to="`/main/students/${resultList[(studentIndex - 1) * 2 + 1].region}&${resultList[(studentIndex - 1) * 2 + 1].name}`" :key="`${resultList[(studentIndex - 1) * 2 + 1].region}&${resultList[(studentIndex - 1) * 2 + 1].name}`">
+                {{ resultList[(studentIndex - 1) * 2 + 1].name }}
+              </v-btn>
             </v-row>
             <v-row>
               <v-col class="d-flex flex-column justify-space-between">
@@ -161,97 +166,97 @@
 
 <script>
 export default {
-  // async asyncData ({ params, $axios }) {
-  //   const conditions = params.studentList.split('&')
-  //   let location = ''
-  //   let name = ''
-  //   if (conditions.length > 1) {
-  //     console.log(conditions)
-  //     if (conditions[0] === '') {
-  //       console.log('이름만!')
-  //       name = conditions[1]
-  //     } else {
-  //       console.log('둘다!!')
-  //       location = conditions[0]
-  //       name = conditions[1]
-  //     }
-  //   } else {
-  //     console.log('지역!!!!!')
-  //     location = conditions[0]
-  //     console.log('wowo')
-  //   }
+  async asyncData ({ params, $axios }) {
+    const conditions = params.studentList.split('&')
+    let location = ''
+    let name = ''
+    if (conditions.length > 1) {
+      console.log(conditions)
+      if (conditions[0] === '') {
+        console.log('이름만!')
+        name = conditions[1]
+      } else {
+        console.log('둘다!!')
+        location = conditions[0]
+        name = conditions[1]
+      }
+    } else {
+      console.log('지역!!!!!')
+      location = conditions[0]
+      console.log('wowo')
+    }
 
-  //   const today = new Date()
-  //   const year = today.getFullYear()
-  //   const month = today.getMonth() + 1
-  //   const studentData = await $axios.$get(`/api/checks/month/all/${year}/${month}`)
-  //   const resultList = []
-  //   if (location === '') {
-  //     for (const student in studentData) {
-  //       if (studentData[student].name.includes(decodeURI(name)) || studentData[student].student_id === name) {
-  //         resultList.push(studentData[student])
-  //       }
-  //     }
-  //   } else if (name === '') {
-  //     for (const student in studentData) {
-  //       if (location.includes(studentData[student].region)) {
-  //         resultList.push(studentData[student])
-  //       }
-  //     }
-  //   } else {
-  //     for (const student in studentData) {
-  //       if (location.includes(studentData[student].region) && (studentData[student].name.includes(decodeURI(name)) || studentData[student].student_id === Number(name))) {
-  //         resultList.push(studentData[student])
-  //       }
-  //     }
-  //   }
-  //   console.log(resultList)
-  //   return { year, month, resultList }
-  // },
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = today.getMonth() + 1
+    const studentData = await $axios.$get(`/api/checks/month/all/${year}/${month}`)
+    const resultList = []
+    if (location === '') {
+      for (const student in studentData) {
+        if (studentData[student].name.includes(decodeURI(name)) || studentData[student].student_id === name) {
+          resultList.push(studentData[student])
+        }
+      }
+    } else if (name === '') {
+      for (const student in studentData) {
+        if (location.includes(studentData[student].region)) {
+          resultList.push(studentData[student])
+        }
+      }
+    } else {
+      for (const student in studentData) {
+        if (location.includes(studentData[student].region) && (studentData[student].name.includes(decodeURI(name)) || studentData[student].student_id === name)) {
+          resultList.push(studentData[student])
+        }
+      }
+    }
+    console.log(resultList)
+    return { year, month, resultList }
+  },
   data () {
     return {
-      locations: ['', '서울', '대전', '광주', '구미'],
-      resultList: [
-        {
-          region: 2,
-          stage: 1,
-          student_id: '0234999',
-          name: '홍길금',
-          attendance_rate: 100,
-          intime: '',
-          outtime: '',
-          come_late_cnt: 1,
-          early_left_cnt: 0,
-          allow_absent_day: 0,
-          Disallow_absent_day: 1
-        },
-        {
-          region: 2,
-          stage: 1,
-          student_id: '0234989',
-          name: '홍길은',
-          attendance_rate: 98,
-          intime: '',
-          outtime: '',
-          come_late_cnt: 1,
-          early_left_cnt: 0,
-          allow_absent_day: 0,
-          Disallow_absent_day: 1
-        },
-        {
-          region: 2,
-          stage: 1,
-          student_id: '0234980',
-          name: '홍길동',
-          attendance_rate: 94,
-          intime: '',
-          outtime: '',
-          come_late_cnt: 1,
-          early_left_cnt: 0,
-          allow_absent_day: 0,
-          Disallow_absent_day: 0
-        }
-      ]
+      locations: ['', '서울', '대전', '광주', '구미']
+      // resultList: [
+      //   {
+      //     region: 2,
+      //     stage: 1,
+      //     student_id: '0234999',
+      //     name: '홍길금',
+      //     attendance_rate: 100,
+      //     intime: '',
+      //     outtime: '',
+      //     come_late_cnt: 1,
+      //     early_left_cnt: 0,
+      //     allow_absent_day: 0,
+      //     Disallow_absent_day: 1
+      //   },
+      //   {
+      //     region: 2,
+      //     stage: 1,
+      //     student_id: '0234989',
+      //     name: '홍길은',
+      //     attendance_rate: 98,
+      //     intime: '',
+      //     outtime: '',
+      //     come_late_cnt: 1,
+      //     early_left_cnt: 0,
+      //     allow_absent_day: 0,
+      //     Disallow_absent_day: 1
+      //   },
+      //   {
+      //     region: 2,
+      //     stage: 1,
+      //     student_id: '0234980',
+      //     name: '홍길동',
+      //     attendance_rate: 94,
+      //     intime: '',
+      //     outtime: '',
+      //     come_late_cnt: 1,
+      //     early_left_cnt: 0,
+      //     allow_absent_day: 0,
+      //     Disallow_absent_day: 0
+      //   }
+      // ]
     }
   }
 }
