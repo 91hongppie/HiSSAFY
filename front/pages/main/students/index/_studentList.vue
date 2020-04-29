@@ -9,25 +9,29 @@
       <v-col class="text-center font-weight-bold">결석 (회)</v-col>
     </v-row>
     <v-row v-for="student in studentList" :key="student.id">
-      <v-col class="text-center"><nuxt-link :to="`/main/students/${student.id}`">{{ student.name }}</nuxt-link></v-col>
+      <v-col class="text-center">{{ student.name }}</v-col>
       <v-col class="text-center">{{ student.mark }}</v-col>
       <v-col class="text-center">{{ student.intime }}</v-col>
       <v-col class="text-center">{{ student.outtime }}</v-col>
       <v-col class="text-center">{{ student.late }}</v-col>
       <v-col class="text-center">{{ student.out }}</v-col>
     </v-row>
+    {{ urlParams }}
   </div>
 </template>
 
 <script>
 export default {
-  async asyncData ({ params, $axios }) {
-    console.log(params)
-    const today = new Date()
-    const year = today.getFullYear()
-    const month = today.getMonth() + 1
-    const studentList = await $axios.$get(`/api/checks/month/all/${year}/${month}/`)
-    return { studentList, year, month }
+  mounted () {
+    const urlParams = this.getUrlParams()
+    return { urlParams }
+  },
+  methods: {
+    getUrlParams () {
+      const params = {}
+      window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (str, key, value) { params[key] = value })
+      return params
+    }
   }
 }
 </script>
