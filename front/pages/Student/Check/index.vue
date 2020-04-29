@@ -130,9 +130,9 @@ export default {
             formdata.append('region_id', this.selectLocation + 1)
             this.$axios.$post('/api/recognition/', formdata)
               .then((data) => {
+                console.log(data)
                 for (let i = 0; i < data.length; i++) {
                   const element = data[i][0]
-                  console.log(element.region)
                   if (this.studentNames[element.region - 1].length === 20) {
                     this.studentNames[element.region - 1] = this.studentNames[element.region - 1].slice(1, this.studentNames[element.region - 1].length)
                     this.studentIds[element.region - 1] = this.studentIds[element.region - 1].slice(1, this.studentIds[element.region - 1].length)
@@ -144,8 +144,6 @@ export default {
                 }
               })
               .catch(e => console.error(e))
-            console.log(this.studentNames)
-            console.log(this.studentIds)
           }
         }, 2000)
       })

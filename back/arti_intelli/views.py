@@ -56,10 +56,14 @@ class Recognition(APIView):
                 image_face = image1[top:bottom, left:right]
                 image_face = cv2.add(image_face,np.array([30.0]))
                 unknown_face = fr.face_encodings(image_face)
+                print(11111111111111111111111111111111111)
                 dis = 1
+                print(region)
                 # region_name = request.data.get('region')
                 with open(f'data/accounts_{region}.json') as accounts:
+                    print(333333333333333333333333333333333)
                     datas = json.load(accounts)
+                print(111111111211122222222222221111111111111111111111)
                 for student_id, data in datas.items():
                     for dt in data:
                         dt = [np.asarray(dt)]
@@ -68,15 +72,16 @@ class Recognition(APIView):
                             if not Check.objects.filter(student_info=student_id):
                                 dis = distance
                                 account_student_id = student_id
+                print(555555555555555555555555555555555555)
                 if account_student_id:
                     if len(datas[account_student_id]) == 20:
                         datas[account_student_id] = datas[account_student_id][1::]
                     datas[account_student_id].append(unknown_face[0].tolist())
                     with open(f'data/accounts_{region}.json', 'w', encoding='utf-8') as accounts:
                         json.dump(datas, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
-                
+                print(66666666666666666666666666666666)
                 student_id = account_student_id
-                checks = Check.objects.filter(date=date.today(), student_info_id=student)
+                checks = Check.objects.filter(date=date.today(), student_info_id=student_id)
                 students = Account.objects.filter(student_id=student_id)
                 student = AccountSerializer(students[0]).data['id']
                 if not checks:
@@ -102,8 +107,10 @@ class Recognition(APIView):
                             checks[0].save()
                 accounts = Account.objects.filter(student_id=account_student_id)
                 serializer = AccountSerializer(accounts, many=True)
+                print(serializer.data)
                 data_list.append(serializer.data)
         except:
+            print(111111111111111111111)
             return Response(data_list)
         return Response(data_list)
 
@@ -121,10 +128,10 @@ class AddAccount(APIView):
         known_image = cv2.add(known_image, np.array([30.0]))
         try:
             top, right, bottom, left = fr.face_locations(known_image)[0]
+            known_image_face = known_image[top:bottom, left:right]
+            known_face = fr.face_encodings(known_image_face)
         except:
             return Response('사진을 다시 찍어주세요.', status=status.HTTP_204_NO_CONTENT)
-        known_image_face = known_image[top:bottom, left:right]
-        known_face = fr.face_encodings(known_image_face)
         info = request.data
         json_data = {}
         encodedNumpyData = json.dumps(json_data, cls=NumpyArrayEncoder)
@@ -137,7 +144,6 @@ class AddAccount(APIView):
         except:
             data = {}
             data[info.get('student_id')] = [known_face[0].tolist()]
-
         with open(f'data/accounts_{region_name}.json', 'w', encoding='utf-8') as accounts:
             json.dump(data, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
         image_name.field_name = f'{info.get("name")}.jpg'
