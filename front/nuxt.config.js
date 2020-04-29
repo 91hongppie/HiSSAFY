@@ -5,7 +5,7 @@ export default {
   ** Headers of the page
   */
   head: {
-    title: "HI SSAFY!",
+    title: 'HI SSAFY!',
     // title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
@@ -14,7 +14,7 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/hi_ssafy.ico' },
-      { rel: 'stylesheet', href: "https://fonts.googleapis.com/css?family=Gugi|Nanum+Gothic|Noto+Sans+KR|Jua&display=swap"}
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Gugi|Nanum+Gothic|Noto+Sans+KR|Jua&display=swap' }
     ]
   },
   /*

@@ -11,10 +11,13 @@
 
 <script>
 export default {
-  computed () {
-    setTimeout(this.$router.push('/'), 1000)
+  mounted () {
+    this.backtomain()
   },
   methods: {
+    backtomain () {
+      setTimeout(this.$router.push('/'), 1000)
+    }
   }
 }
 </script>

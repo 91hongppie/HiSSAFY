@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Campus, Account, Check, AccountImage
@@ -12,6 +13,7 @@ from django.db.models import Count, Avg
 from rest_framework.parsers import MultiPartParser, FileUploadParser
 from matplotlib import pyplot as plt
 from PIL import Image, ImageEnhance
+from io import BytesIO
 # from gpuinfo import GPUInfo
 import numpy as np
 from numpy import genfromtxt
@@ -112,11 +114,14 @@ class AddAccount(APIView):
     def post(self, request):
         student_id = request.data.get('student_id')
         if Account.objects.filter(student_id=student_id):
-            return Response('이미 등록된 사용자입니다.')
+            return Response('이미 등록된 사용자입니다.', status=status.HTTP_400_BAD_REQUEST)
         image_name = request.FILES['pic_name']
         known_image = fr.load_image_file(image_name)
         known_image = cv2.add(known_image, np.array([30.0]))
-        top, right, bottom, left = fr.face_locations(known_image)[0]
+        try:
+            top, right, bottom, left = fr.face_locations(known_image)[0]
+        except:
+            return Response('사진을 다시 찍어주세요.', status=status.HTTP_204_NO_CONTENT)
         known_image_face = known_image[top:bottom, left:right]
         known_face = fr.face_encodings(known_image_face)
         info = request.data
@@ -134,6 +139,11 @@ class AddAccount(APIView):
 
         with open(f'data/accounts_{region_name}.json', 'w', encoding='utf-8') as accounts:
             json.dump(data, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
+        image_name.field_name = f'{info.get("name")}.jpg'
+        image_name.name = f'{info.get("name")}.jpg'
+        image_name.content_type = 'image/jpg'
+        image_name.size = len(image_name)
+        image_name.charser = 'utf-8'
         data = {
             'pic_name': image_name,
             'name': info.get('name'),

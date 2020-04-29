@@ -1,5 +1,10 @@
 <template>
   <div class="container blue">
+    <v-dialog
+      @before-opened="dialogEvent('before-open')"
+      @before-closed="dialogEvent('before-close')"
+      @opened="dialogEvent('opened')"
+      @closed="dialogEvent('closed')"/>
     <header>
       <h1 class="titles text-center mb-5">
         얼굴 등록하기
@@ -20,7 +25,7 @@
           <canvas style="display:none;" width="640" height="480" />
           <p />
           <v-btn id="yes" color="success mr-5" large @click="stopSave()">제출</v-btn>
-          <v-btn id="no" color="deep-orange ml-5" large @click="refresh()">다시 찍기</v-btn>
+          <v-btn id="no" color="deep-orange ml-5" large @click="videoShow()">다시 찍기</v-btn>
           <div class="infos">
             <v-text-field v-model="name" label="이름" placeholder="예: 홍길동" />
             <v-text-field v-model="student_id" label="학번" placeholder="예: 0123567" />
@@ -141,9 +146,16 @@ export default {
       const video = document.querySelector('video')
       if (btns.style.visibility === 'hidden') {
         btns.style.visibility = 'visible'
-      } else {
-        btns.style.visibility = 'hidden'
       }
+      if (video.style.visibility === 'hidden') {
+        video.style.visibility = 'visible'
+      } else {
+        video.style.visbiility = 'hidden'
+      }
+    },
+    videoShow () {
+      const video = document.querySelector('img')
+      video.src = ''
       if (video.style.visibility === 'hidden') {
         video.style.visibility = 'visible'
       } else {
@@ -167,15 +179,26 @@ export default {
         formdata,
         (res) => {
           if (res.status === 200) {
+            document.querySelector('video').pause()
             this.$router.push({
               path: '/student/enroll/completed_enroll'
             })
+          } else if (res.status === 204) {
+            this.$modal.show('dialog', {
+              text: '얼굴이 잘나오도록 사진을 다시 촬영해주세요.'
+            })
           }
+        },
+        (err) => {
+          console.log(err)
+          this.$modal.show('dialog', {
+            text: '이미 등록된 학번입니다. 다시 한번 확인해주세요.'
+          })
         }
       )
     },
-    refresh () {
-      window.location.reload()
+    dialogEvent (eventName) {
+      console.log('Dialog event: ' + eventName)
     }
   }
 }
@@ -198,5 +221,13 @@ export default {
 .describe {
   font-size: 30pt;
   color: #ffffff;
+}
+
+.example-modal-content {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 13px;
+  overflow: auto;
 }
 </style>

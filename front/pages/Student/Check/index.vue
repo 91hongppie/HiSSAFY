@@ -1,13 +1,10 @@
 <template>
   <div class="container" onunload="videoOff()">
-    <header>
+    <!-- <header>
       <h1 class="titles text-center mb-5">
         체크하기
       </h1>
-      <div class="text-center">
-        <p id="ClockDisplay" class="clock" />
-      </div>
-    </header>
+    </header> -->
     <div>
       <div class="locationSelect">
         <v-chip
@@ -19,6 +16,9 @@
         >
           {{ locations[lo - 1] }}
         </v-chip>
+      </div>
+      <div class="text-center">
+        <p id="ClockDisplay" class="clock" />
       </div>
       <video id="face-video" width="720" height="560" autoplay muted />
     </div>
@@ -168,9 +168,12 @@ export default {
 }
 
 .clock {
-  position: relative;
+  position: absolute;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
   color: #ffffff;
-  font-size: 65pt;
+  font-size: 45pt;
   font-family: 'Helvetica';
 }
 
