@@ -1,6 +1,11 @@
 
 export default {
   mode: 'spa',
+  loadingIndicator: {
+    name: 'folding-cube',
+    color: '#000',
+    background: 'rgba(255,255,255,0.12)'
+  },
   /*
   ** Headers of the page
   */
@@ -20,7 +25,10 @@ export default {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#fff' },
+  loading: { 
+    color: '#47c3d1',
+    height: '7px'
+  },
   /*
   ** Global CSS
   */
