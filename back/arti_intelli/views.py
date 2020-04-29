@@ -121,10 +121,10 @@ class AddAccount(APIView):
         known_image = cv2.add(known_image, np.array([30.0]))
         try:
             top, right, bottom, left = fr.face_locations(known_image)[0]
+            known_image_face = known_image[top:bottom, left:right]
+            known_face = fr.face_encodings(known_image_face)
         except:
             return Response('사진을 다시 찍어주세요.', status=status.HTTP_204_NO_CONTENT)
-        known_image_face = known_image[top:bottom, left:right]
-        known_face = fr.face_encodings(known_image_face)
         info = request.data
         json_data = {}
         encodedNumpyData = json.dumps(json_data, cls=NumpyArrayEncoder)
@@ -137,7 +137,6 @@ class AddAccount(APIView):
         except:
             data = {}
             data[info.get('student_id')] = [known_face[0].tolist()]
-
         with open(f'data/accounts_{region_name}.json', 'w', encoding='utf-8') as accounts:
             json.dump(data, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
         image_name.field_name = f'{info.get("name")}.jpg'

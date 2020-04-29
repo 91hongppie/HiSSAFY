@@ -32,7 +32,7 @@
           <v-btn id="yes" color="success mr-5" large :disabled="!isSubmit" @click="stopSave()">제출</v-btn>
           <v-btn id="no" color="deep-orange ml-5" large @click="videoShow()">다시 찍기</v-btn>
           <div class="infos">
-            <v-text-field v-model="name" label="이름" placeholder="예: 홍길동" />
+            <v-text-field v-model="form.name" label="이름" placeholder="예: 홍길동" />
             <v-text-field
               v-model="form.student_id"
               label="학번"
@@ -263,7 +263,7 @@ export default {
         (err) => {
           console.log(err)
           this.$modal.show('dialog', {
-            text: '이미 등록된 학번입니다. 다시 한번 확인해주세요.'
+            text: '개인정보를 다시 한번 확인해주세요.'
           })
         }
       )
