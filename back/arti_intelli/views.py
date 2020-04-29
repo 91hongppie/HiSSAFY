@@ -101,7 +101,7 @@ class Recognition(APIView):
                             checks[0].status = 0
                             checks[0].save()
                 accounts = Account.objects.filter(student_id=account_student_id)
-                serializer = AccountSerializer(accounts)
+                serializer = AccountSerializer(accounts, many=True)
                 data_list.append(serializer.data)
         except:
             return Response(data_list)
@@ -295,18 +295,22 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
         avg_in_time = '-'
         avg_out_time = '-'
         if checks:
-            avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
-            if len(avg_in_time1[:-4]) == 2:
-                avg_in_time2 = avg_in_time1[:-4]
-            else:
-                avg_in_time2 = '0'+avg_in_time1[:-4]
-            avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
-            avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
-            if len(avg_out_time1[:-4]) == 2:
-                avg_out_time2 = avg_out_time1[:-4]
-            else:
-                avg_out_time2 = '0'+avg_out_time1[:-4]
-            avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
+            try:
+                avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
+                if len(avg_in_time1[:-4]) == 2:
+                    avg_in_time2 = avg_in_time1[:-4]
+                else:
+                    avg_in_time2 = '0'+avg_in_time1[:-4]
+                avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
+                avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
+                if len(avg_out_time1[:-4]) == 2:
+                    avg_out_time2 = avg_out_time1[:-4]
+                else:
+                    avg_out_time2 = '0'+avg_out_time1[:-4]
+                avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
+            except:
+                avg_in_time = '-'
+                avg_out_time = '-'
         data = {
             'student_id': student[0],
             'name': student[1],
@@ -373,18 +377,22 @@ def check_on_month_all(request, pk1, pk2):
         avg_in_time = '-'
         avg_out_time = '-'
         if checks:
-            avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
-            if len(avg_in_time1[:-4]) == 2:
-                avg_in_time2 = avg_in_time1[:-4]
-            else:
-                avg_in_time2 = '0'+avg_in_time1[:-4]
-            avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
-            avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
-            if len(avg_out_time1[:-4]) == 2:
-                avg_out_time2 = avg_out_time1[:-4]
-            else:
-                avg_out_time2 = '0'+avg_out_time1[:-4]
-            avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
+            try:
+                avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
+                if len(avg_in_time1[:-4]) == 2:
+                    avg_in_time2 = avg_in_time1[:-4]
+                else:
+                    avg_in_time2 = '0'+avg_in_time1[:-4]
+                avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
+                avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
+                if len(avg_out_time1[:-4]) == 2:
+                    avg_out_time2 = avg_out_time1[:-4]
+                else:
+                    avg_out_time2 = '0'+avg_out_time1[:-4]
+                avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
+            except:
+                avg_in_time = '-'
+                avg_out_time = '-'
         data = {
             'stage': student[2],
             'region': student[3],
@@ -445,18 +453,22 @@ def check_on_month_one(request, pk1, pk2, pk3):
     avg_in_time = '-'
     avg_out_time = '-'
     if checks:
-        avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
-        if len(avg_in_time1[:-4]) == 2:
-            avg_in_time2 = avg_in_time1[:-4]
-        else:
-            avg_in_time2 = '0'+avg_in_time1[:-4]
-        avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
-        avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
-        if len(avg_out_time1[:-4]) == 2:
-            avg_out_time2 = avg_out_time1[:-4]
-        else:
-            avg_out_time2 = '0'+avg_out_time1[:-4]
-        avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
+        try:
+            avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
+            if len(avg_in_time1[:-4]) == 2:
+                avg_in_time2 = avg_in_time1[:-4]
+            else:
+                avg_in_time2 = '0'+avg_in_time1[:-4]
+            avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
+            avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
+            if len(avg_out_time1[:-4]) == 2:
+                avg_out_time2 = avg_out_time1[:-4]
+            else:
+                avg_out_time2 = '0'+avg_out_time1[:-4]
+            avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
+        except:
+            avg_in_time = '-'
+            avg_out_time = '-'
     data = {
         'student_id': student_id,
         'name': name,
