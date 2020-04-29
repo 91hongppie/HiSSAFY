@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Campus, Account, Check, AccountImage
@@ -11,7 +12,8 @@ from datetime import datetime, date, time
 from django.db.models import Count, Avg
 from rest_framework.parsers import MultiPartParser, FileUploadParser
 from matplotlib import pyplot as plt
-from PIL import Image
+from PIL import Image, ImageEnhance
+from io import BytesIO
 # from gpuinfo import GPUInfo
 import numpy as np
 from numpy import genfromtxt
@@ -20,6 +22,7 @@ import json
 from json import JSONEncoder
 # import pandas as pd
 import csv
+import cv2
 import ast
 
 
@@ -36,17 +39,22 @@ class Recognition(APIView):
         얼굴 인식
     """
     def post(self, request):
-        # image = request.FILES['pic_name']
         data_list = []
         try:
+            now = datetime.now().time()
+            in_time = now.replace(hour=9, minute=0, second=0, microsecond=0)
+            early_left_time = now.replace(hour=14, minute=0, second=0, microsecond=0)
+            out_time = now.replace(hour=18, minute=0, second=0, microsecond=0)
             image = request.data['pic_name']
             region_id = request.data['region_id']
             region = Campus.objects.get(id=region_id).campus
             image1 = fr.load_image_file(image)
+            image1 = cv2.add(image1, np.array([30.0]))
             faces = fr.face_locations(image1)
             for face in faces:
                 top, right, bottom, left = face
                 image_face = image1[top:bottom, left:right]
+                image_face = cv2.add(image_face,np.array([30.0]))
                 unknown_face = fr.face_encodings(image_face)
                 dis = 1
                 # region_name = request.data.get('region')
@@ -60,11 +68,40 @@ class Recognition(APIView):
                             if not Check.objects.filter(student_info=student_id):
                                 dis = distance
                                 account_student_id = student_id
+                if account_student_id:
+                    if len(datas[account_student_id]) == 20:
+                        datas[account_student_id] = datas[account_student_id][1::]
+                    datas[account_student_id].append(unknown_face[0].tolist())
+                    with open(f'data/accounts_{region}.json', 'w', encoding='utf-8') as accounts:
+                        json.dump(datas, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
+                student_id = account_student_id
+                students = Account.objects.filter(student_id=student_id)
+                student = AccountSerializer(students[0]).data['id']
+                checks = Check.objects.filter(date=date.today(), student_info_id=student)
+                if not checks:
+                    status = cv2.imwrite(f'in_pic/{region_id}/{date.today()}_{student_id}.jpg', image1)
+                    if now < in_time:
+                        Check.objects.create(date=date.today(), in_time=now, status='1', student_info=Account.objects.get(id=student))
+                    else:
+                        Check.objects.create(date=date.today(), in_time=now, is_late=True, status='1', student_info=Account.objects.get(id=student))
+                else:
+                    status = cv2.imwrite(f'out_pic/{region_id}/{date.today()}_{student_id}.jpg', image1)
+                    if now >= out_time:
+                        checks[0].out_time = now
+                        checks[0].is_early_left = False
+                        checks[0].save()
+                    else:
+                        if now >= early_left_time:
+                            checks[0].out_time = now
+                            checks[0].is_early_left = True
+                            checks[0].save()
+                        else:
+                            checks[0].out_time = now
+                            checks[0].status = 0
+                            checks[0].save()
                 accounts = Account.objects.filter(student_id=account_student_id)
-                serializer = AccountSerializer(accounts, many=True)
-                data = serializer.data
-                # data['face_encodings'] = unknown_face[0].tolist()
-                data_list.append(data)
+                serializer = AccountSerializer(accounts)
+                data_list.append(serializer.data)
         except:
             return Response(data_list)
         return Response(data_list)
@@ -77,10 +114,14 @@ class AddAccount(APIView):
     def post(self, request):
         student_id = request.data.get('student_id')
         if Account.objects.filter(student_id=student_id):
-            return Response('이미 등록된 사용자입니다.')
+            return Response('이미 등록된 사용자입니다.', status=status.HTTP_400_BAD_REQUEST)
         image_name = request.FILES['pic_name']
         known_image = fr.load_image_file(image_name)
-        top, right, bottom, left = fr.face_locations(known_image)[0]
+        known_image = cv2.add(known_image, np.array([30.0]))
+        try:
+            top, right, bottom, left = fr.face_locations(known_image)[0]
+        except:
+            return Response('사진을 다시 찍어주세요.', status=status.HTTP_204_NO_CONTENT)
         known_image_face = known_image[top:bottom, left:right]
         known_face = fr.face_encodings(known_image_face)
         info = request.data
@@ -98,6 +139,11 @@ class AddAccount(APIView):
 
         with open(f'data/accounts_{region_name}.json', 'w', encoding='utf-8') as accounts:
             json.dump(data, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
+        image_name.field_name = f'{info.get("name")}.jpg'
+        image_name.name = f'{info.get("name")}.jpg'
+        image_name.content_type = 'image/jpg'
+        image_name.size = len(image_name)
+        image_name.charser = 'utf-8'
         data = {
             'pic_name': image_name,
             'name': info.get('name'),
@@ -536,43 +582,3 @@ def classes_attendance(request, pk1, pk2, pk3):
     data = {'avg_attendance_rate': '{:.0f}'.format(avg_attendance_rate)}
     datas.append(data)
     return Response(datas)
-
-
-@api_view(['POST'])
-def in_calling(request):
-    """
-        입실 클릭
-    """
-    student_id = '0233001'
-    students = Account.objects.filter(student_id=student_id)
-    student = AccountSerializer(students, many=True).data[0]['id']
-    checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
-    if not checks:
-        if datetime.now().time() < '09:00:00':
-            Check.objects.create(date=date.today(), in_time=datetime.now().time(), status='1', student_info=Account.objects.get(id=student))
-        else:
-            Check.objects.create(date=date.today(), in_time=datetime.now().time(), is_late=True, status='1', student_info=Account.objects.get(id=student))
-    checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
-    serializers = CheckSerializer(checks, many=True)
-    return Response(serializers.data)
-
-
-@api_view(['PATCH'])
-def out_calling(request):
-    """
-        퇴실 클릭
-    """
-    student_id = '0233001'
-    checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
-    if checks:
-        if datetime.now().time() >= '18:00:00':
-            check.update(out_time=datetime.now().time())
-        else:
-            if datetime.now().time() >= '14:00:00':
-                check.update(out_time=datetime.now().time(), is_early_left=True)
-            else:
-                check.update(out_time=datetime.now().time(), status=0)
-    checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
-    serializers = CheckSerializer(checks, many=True)
-    return Response(serializers.data)
-

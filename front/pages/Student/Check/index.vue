@@ -1,13 +1,10 @@
 <template>
   <div class="container" onunload="videoOff()">
-    <header>
+    <!-- <header>
       <h1 class="titles text-center mb-5">
         체크하기
       </h1>
-      <div class="text-center">
-        <p id="ClockDisplay" class="clock" />
-      </div>
-    </header>
+    </header> -->
     <div>
       <div class="locationSelect">
         <v-chip
@@ -20,6 +17,9 @@
           {{ locations[lo - 1] }}
         </v-chip>
       </div>
+      <div class="text-center">
+        <p id="ClockDisplay" class="clock" />
+      </div>
       <video id="face-video" width="720" height="560" autoplay muted />
     </div>
   </div>
@@ -29,14 +29,9 @@
 import * as faceapi from 'face-api.js'
 
 export default {
-  asyncData ({ params }) {
-    const campusRoot = params.campus
-
-    return { campusRoot }
-  },
   data: () => {
     return {
-      locations: ['서울', '대전', '광주', '구미'],
+      locations: ['서울', '대전', '구미', '광주'],
       stage: ['success', 'warning', 'info'],
       default_campus: [true, false, false, false],
       selectLocation: 0
@@ -77,7 +72,6 @@ export default {
       this.default_campus = this.default_campus.map(v => false)
       this.default_campus[v - 1] = true
       this.selectLocation = v - 1
-      console.log(this.selectLocation)
     },
     start () {
       return Promise.all([
@@ -116,7 +110,7 @@ export default {
             formdata.append('region_id', this.selectLocation + 1)
             return this.$axios.$post('/api/recognition/', formdata)
               .then(function (data) {
-                console.log(`data: ${data}`)
+                console.log(data)
               })
               .catch(e => console.error(e))
           }
@@ -167,16 +161,19 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .titles {
   font-size: 100pt;
   color: #ffffff;
 }
 
 .clock {
-  position: relative;
+  position: absolute;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
   color: #ffffff;
-  font-size: 65pt;
+  font-size: 45pt;
   font-family: 'Helvetica';
 }
 
@@ -207,8 +204,63 @@ canvas {
   background-color: hotpink !important;
   color: white;
 }
+
 .unSelectButton {
   background-color: white !important;
   border: 1px dashed black;
+}
+
+.example-modal-content {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 13px;
+  overflow: auto;
+}
+
+button.btn {
+  outline: none;
+  background: white;
+  border: 0;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-radius: 3px;
+
+  color: white;
+
+  box-shadow: 0 4px 8px rgba(#20a0ff, .3);
+  background: #4db3ff;
+
+  font-weight: 600;
+
+  border-radius: 3px;
+
+  min-width: 90px;
+
+  margin-bottom: 8px;
+  margin-top: 8px;
+  margin-right: 8px;
+
+  &:hover {
+    background: #20a0ff;
+  }
+
+  &.green {
+    box-shadow: 0 4px 8px rgba(#50C9BA, .3);
+    background: #50C9BA;
+
+    &:hover {
+     background: mix(#50C9BA, black, 95%);
+    }
+  }
+
+  &.red {
+    box-shadow: 0 4px 8px rgba(#F21368, .3);
+    background: #F21368;
+
+    &:hover {
+      background: mix(#F21368, black, 95%);
+    }
+  }
 }
 </style>
