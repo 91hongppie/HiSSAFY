@@ -178,6 +178,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+#goback {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
 .titles {
   font-size: 100pt;
   color: #ffffff;
