@@ -1,10 +1,8 @@
 import axios from 'axios'
 
 const Enroll = (data, callback, errorCallback) => {
-  const form = new FormData()
-  form.append(data)
-
-  axios.post('http://127.0.0.1/api/account/', form)
+  console.log(data)
+  axios.post('http://127.0.0.1:8000/api/add/account/', data)
     .then((res) => {
       callback(res)
     })

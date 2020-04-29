@@ -38,13 +38,13 @@ Vue.component('my-doughnut', {
       default: 1
     }
   },
-  mounted () {
-    this.renderChart(this.data, this.options)
-  },
   watch: {
     location () {
       this.renderChart(this.data, this.options)
     }
+  },
+  mounted () {
+    this.renderChart(this.data, this.options)
   }
 })
 

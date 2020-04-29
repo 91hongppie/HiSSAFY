@@ -1,11 +1,16 @@
 
 export default {
   mode: 'spa',
+  loadingIndicator: {
+    name: 'folding-cube',
+    color: '#000',
+    background: 'rgba(255,255,255,0.12)'
+  },
   /*
   ** Headers of the page
   */
   head: {
-    title: "HI SSAFY!",
+    title: 'HI SSAFY!',
     // title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
@@ -14,13 +19,16 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/hi_ssafy.ico' },
-      { rel: 'stylesheet', href: "https://fonts.googleapis.com/css?family=Gugi|Nanum+Gothic|Noto+Sans+KR|Jua&display=swap"}
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Gugi|Nanum+Gothic|Noto+Sans+KR|Jua&display=swap' }
     ]
   },
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#fff' },
+  loading: { 
+    color: '#47c3d1',
+    height: '7px'
+  },
   /*
   ** Global CSS
   */
@@ -30,6 +38,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~plugins/vue-js-modal.js',
     { src: '~plugins/vue-chartjs.js', mode: 'client' }
   ],
   /*

@@ -1,17 +1,27 @@
 <template>
   <div class="container blue">
+    <v-dialog
+      @before-opened="dialogEvent('before-open')"
+      @before-closed="dialogEvent('before-close')"
+      @opened="dialogEvent('opened')"
+      @closed="dialogEvent('closed')"/>
+    <div id="goback">
+      <v-btn color="secondary mr-5" @click="goBack()">뒤로가기</v-btn>
+    </div>
     <header>
       <h1 class="titles text-center mb-5">
         얼굴 등록하기
       </h1>
       <div class="text-center">
-        <p id="ClockDisplay" class="clock" onload="showTime()" />
+        <p id="ClockDisplay" class="clock" />
       </div>
     </header>
     <div class="screens text-center">
       <div class="vid">
         <p class="describe text-center">얼굴을 중앙에 두고 클릭합니다.</p>
-        <video autoplay="true" @click="hideShow()">No video support in your browser</video>
+      </div>
+      <div class="video">
+        <video id="face-video" autoplay="true" @click="hideShow()">No video support in your browser</video>
       </div>
       <div class="chk-face">
         <div id="btns" style="visibility: hidden; margin-top: 50px;">
@@ -19,18 +29,38 @@
           <img src="">
           <canvas style="display:none;" width="640" height="480" />
           <p />
-          <v-btn id="yes" color="success mr-5" large @click="stopSave()">제출</v-btn>
-          <v-btn id="no" color="deep-orange ml-5" large @click="refresh()">다시 찍기</v-btn>
+          <v-btn id="yes" color="success mr-5" large :disabled="!isSubmit" @click="stopSave()">제출</v-btn>
+          <v-btn id="no" color="deep-orange ml-5" large @click="videoShow()">다시 찍기</v-btn>
           <div class="infos">
-            <v-text-field v-model="name" label="이름" placeholder="예: 홍길동"></v-text-field>
-            <v-text-field v-model="student_id" label="학번" placeholder="예: 0123567"></v-text-field>
-            <v-text-field v-model="stage" label="기수" placeholder="2기인 경우: 2 입력"></v-text-field>
-            <v-text-field v-model="classes" label="반" placeholder="1반인 경우: 1 입력"></v-text-field>
-            <v-text-field v-model="birthday" label="생일" placeholder="예: 1990-01-01"></v-text-field>
+            <v-text-field v-model="name" label="이름" placeholder="예: 홍길동" />
+            <v-text-field
+              v-model="form.student_id"
+              label="학번"
+              placeholder="예: 0123567"
+              :rules="[rules.studentIdConfirm(form.student_id)]"/>
+            <v-select
+              v-model="form.campus"
+              :items="items"
+              label="캠퍼스"
+              :rules="[rules.campusConfirm(form.campus)]"/>
+            <v-text-field
+              v-model="form.stage"
+              label="기수"
+              placeholder="2기인 경우: 2 입력"
+              :rules="[rules.infoConfirm(form.stage)]"/>
+            <v-text-field
+              v-model="form.classes"
+              label="반"
+              placeholder="1반인 경우: 1 입력"
+              :rules="[rules.infoConfirm(form.classes)]"/>
+            <v-text-field
+              v-model="form.birthday"
+              label="생일"
+              placeholder="예: 1990-01-01"
+              :rules="[rules.birthdayConfirm(form.birthday)]"/>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -42,21 +72,93 @@ export default {
   data: () => {
     return {
       pic_name: '',
-      name: '',
-      student_id: '',
-      stage: '',
-      classes: '',
-      birthday: ''
+      form: {
+        name: '',
+        student_id: '',
+        stage: '',
+        classes: '',
+        birthday: '',
+        campus: ''
+      },
+      items: ['서울', '대전', '구미', '광주'],
+      isSubmit: false,
+      rules: {
+        studentIdConfirm: v => (v.length === 7 && !/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-z|A-Z]/.test(v)) || '7자리의 숫자를 입력해야합니다.',
+        infoConfirm: v => (!/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-z|A-Z]/.test(v)) || '숫자만 입력해주세요.',
+        birthdayConfirm: v => (v.length === 10 &&
+        !/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-z|A-Z]/.test(v.slice(0, 4)) &&
+        !/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-z|A-Z]/.test(v.slice(5, 7)) &&
+        v.slice(5, 7) <= 12 &&
+        !/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|a-z|A-Z]/.test(v.slice(8, 10)) &&
+        v.slice(8, 10) <= (new Date(v.slice(0, 4), v.slice(5, 7), 0)).getDate()) ||
+       '생일을 올바르게 입력해주세요.',
+        campusConfirm: v => (v.length === 2) || '캠퍼스를 선택해주세요.'
+      }
+    }
+  },
+  watch: {
+    form: {
+      deep: true,
+      handler () {
+        const checkform = this.checkForm()
+        if (checkform) {
+          this.isSubmit = true
+        } else {
+          this.isSubmit = false
+        }
+      }
     }
   },
   mounted () {
     this.getVideo()
+    this.showTime()
   },
   beforeLeave (to, from, next) {
-    this.videoOff()
-    next()
+    document.querySelector('video').pause()
   },
   methods: {
+    goBack () {
+      this.$router.push('/')
+    },
+    checkForm () {
+      console.log((this.rules.campusConfirm(this.form.campus) === true &&
+        this.rules.studentIdConfirm(this.form.student_id) === true &&
+        this.rules.infoConfirm(this.form.stage) === true &&
+        this.rules.infoConfirm(this.form.classes) === true &&
+        this.rules.birthdayConfirm(this.form.birthday) === true))
+      if (this.rules.campusConfirm(this.form.campus) === true &&
+        this.rules.studentIdConfirm(this.form.student_id) === true &&
+        this.rules.infoConfirm(this.form.stage) === true &&
+        this.rules.infoConfirm(this.form.classes) === true &&
+        this.rules.birthdayConfirm(this.form.birthday) === true) {
+        console.log(this.rules)
+        this.isSubmit = true
+        return true
+      } else {
+        this.isSubmit = false
+        return false
+      }
+    },
+    dataURItoBlob (dataURI) {
+      // convert base64/URLEncoded data component to raw binary data held in a string
+      let byteString
+      if (dataURI.split(',')[0].includes('base64') >= 0) {
+        byteString = atob(dataURI.split(',')[1])
+      } else {
+        byteString = unescape(dataURI.split(',')[1])
+      }
+
+      // separate out the mime component
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+      // write the bytes of the string to a typed array
+      const ia = new Uint8Array(byteString.length)
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i)
+      }
+
+      return new Blob([ia], { type: mimeString })
+    },
     getVideo () {
       const constraints = { audio: false, video: true }
       const video = document.querySelector('video')
@@ -68,7 +170,7 @@ export default {
         if (localMediaStream) {
           const image = document.querySelector('img')
           context.drawImage(video, 0, 0, 640, 480)
-          image.src = canvas.toDataURL('image/png')
+          image.src = canvas.toDataURL('image/jpeg')
         }
       }
       video.addEventListener('click', snapshot, false)
@@ -87,73 +189,98 @@ export default {
           video.onloadedmetadata = function (e) {
             video.play()
           }
-          function chkPath () {
-            if (window.location.pathname !== '/student/check') {
-              video.pause()
-              video.src = ''
-              localMediaStream.getTracks()[0].stop()
-            }
-          }
-          const btn = document.querySelector('#yes')
-          btn.addEventListener('click', chkPath)
+          video.addEventListener('pause', () => {
+            const stream = video.srcObject
+            const tracks = stream.getTracks()
+            tracks.forEach(function (track) {
+              track.stop()
+            })
+            video.srcObject = null
+          })
         })
         .catch(function (err) {
           alert(err.name + ': ' + err.message)
         })
     },
-    videoOff () {
-      const monitor = document.querySelector('video')
-      monitor.pause()
-      monitor.src = ''
-      // localstream.getTracks()[0].stop()
-      alert('Video off')
+    showTime () {
+      const date = new Date()
+      let h = date.getHours() // 0 - 23
+      let m = date.getMinutes() // 0 - 59
+      let s = date.getSeconds() // 0 - 59
+
+      h = (h < 10) ? '0' + h : h
+      m = (m < 10) ? '0' + m : m
+      s = (s < 10) ? '0' + s : s
+
+      const time = h + ':' + m + ':' + s
+      document.getElementById('ClockDisplay').textContent = time
+
+      setTimeout(this.showTime, 1000)
     },
     hideShow () {
       const btns = document.getElementById('btns')
-      const video = document.querySelector('video')
+      const yes = document.getElementById('yes')
       if (btns.style.visibility === 'hidden') {
         btns.style.visibility = 'visible'
-      } else {
-        btns.style.visibility = 'hidden'
       }
-      if (video.style.visibility === 'hidden') {
-        video.style.visibility = 'visible'
-      } else {
-        video.style.visbiility = 'hidden'
-      }
+      yes.style.visibility = 'visible'
     },
-    stopSave (data) {
+    videoShow () {
+      const image = document.querySelector('img')
+      const yes = document.getElementById('yes')
+      image.src = ''
+      // if (yes.style.visibility === 'visible') {
+      yes.style.visibility = 'hidden'
+      // }
+    },
+    stopSave () {
       const canvas = document.querySelector('canvas')
       const image = document.querySelector('img')
       image.src = canvas.toDataURL('image/png')
-      const credentials = {
-        pic_name: image.src,
-        name: this.data.name,
-        student_id: this.data.student_id,
-        stage: this.data.stage,
-        classes: this.data.classes,
-        birthday: this.data.birthday
-      }
-      console.log(credentials)
+      const blob = this.dataURItoBlob(image.src)
+      const formdata = new FormData()
+      formdata.append('pic_name', blob)
+      formdata.append('name', this.form.name)
+      formdata.append('student_id', this.form.student_id)
+      formdata.append('stage', this.form.stage)
+      formdata.append('classes', this.form.classes)
+      formdata.append('birthday', this.form.birthday)
+      formdata.append('region', this.form.campus)
       StudentApi.Enroll(
-        credentials,
+        formdata,
         (res) => {
           if (res.status === 200) {
+            document.querySelector('video').pause()
             this.$router.push({
               path: '/student/enroll/completed_enroll'
             })
+          } else if (res.status === 204) {
+            this.$modal.show('dialog', {
+              text: '얼굴이 잘나오도록 사진을 다시 촬영해주세요.'
+            })
           }
+        },
+        (err) => {
+          console.log(err)
+          this.$modal.show('dialog', {
+            text: '이미 등록된 학번입니다. 다시 한번 확인해주세요.'
+          })
         }
       )
     },
-    refresh () {
-      window.location.reload()
+    dialogEvent (eventName) {
+      console.log('Dialog event: ' + eventName)
     }
   }
 }
 </script>
 
 <style scoped>
+#goback {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
 .titles {
   font-size: 40pt;
   color: #ffffff;
@@ -161,8 +288,8 @@ export default {
 
 .clock {
   position: relative;
-  color: #706c61;
-  font-size: 25pt;
+  color: #ffffff;
+  font-size: 35pt;
   font-family: 'Helvetica';
   /* letter-spacing: 3px; */
 }
@@ -170,5 +297,31 @@ export default {
 .describe {
   font-size: 30pt;
   color: #ffffff;
+}
+
+.example-modal-content {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 13px;
+  overflow: auto;
+}
+
+.video {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+#face-video {
+  width: 50%;
+  height: 50%;
+}
+
+#goback {
+  display: flex;
+  width: 100%;
+  align-content: center;
+  justify-content: center;
 }
 </style>

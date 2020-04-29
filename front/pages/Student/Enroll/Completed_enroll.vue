@@ -11,8 +11,11 @@
 
 <script>
 export default {
-  method: {
-    move () {
+  mounted () {
+    this.backtomain()
+  },
+  methods: {
+    backtomain () {
       setTimeout(this.$router.push('/'), 1000)
     }
   }
