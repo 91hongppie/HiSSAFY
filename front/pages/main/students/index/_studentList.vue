@@ -77,7 +77,8 @@
 
     <!-- 1명 이상일 때 -->
     <v-container v-else class="text-center">
-      <h1 class="text-center jua-20">세부적인 내용은 이름을 클릭해서 확인하세요</h1>
+      <h1 v-if="resultList.length > 1" class="text-center jua-20">세부적인 내용은 이름을 클릭해서 확인하세요</h1>
+      <h1 v-else class="text-center jua-20">찾는 정보가 없습니다</h1>
       <v-row v-for="studentIndex in Math.ceil(resultList.length / 2)" :key="studentIndex" row-height="200px">
         <v-col cols="6">
           <v-container class="studentCard jua-20" height="200px">
@@ -171,19 +172,14 @@ export default {
     let location = ''
     let name = ''
     if (conditions.length > 1) {
-      console.log(conditions)
       if (conditions[0] === '') {
-        console.log('이름만!')
         name = conditions[1]
       } else {
-        console.log('둘다!!')
         location = conditions[0]
         name = conditions[1]
       }
     } else {
-      console.log('지역!!!!!')
       location = conditions[0]
-      console.log('wowo')
     }
 
     const today = new Date()
@@ -210,53 +206,11 @@ export default {
         }
       }
     }
-    console.log(resultList)
     return { year, month, resultList }
   },
   data () {
     return {
       locations: ['', '서울', '대전', '광주', '구미']
-      // resultList: [
-      //   {
-      //     region: 2,
-      //     stage: 1,
-      //     student_id: '0234999',
-      //     name: '홍길금',
-      //     attendance_rate: 100,
-      //     intime: '',
-      //     outtime: '',
-      //     come_late_cnt: 1,
-      //     early_left_cnt: 0,
-      //     allow_absent_day: 0,
-      //     Disallow_absent_day: 1
-      //   },
-      //   {
-      //     region: 2,
-      //     stage: 1,
-      //     student_id: '0234989',
-      //     name: '홍길은',
-      //     attendance_rate: 98,
-      //     intime: '',
-      //     outtime: '',
-      //     come_late_cnt: 1,
-      //     early_left_cnt: 0,
-      //     allow_absent_day: 0,
-      //     Disallow_absent_day: 1
-      //   },
-      //   {
-      //     region: 2,
-      //     stage: 1,
-      //     student_id: '0234980',
-      //     name: '홍길동',
-      //     attendance_rate: 94,
-      //     intime: '',
-      //     outtime: '',
-      //     come_late_cnt: 1,
-      //     early_left_cnt: 0,
-      //     allow_absent_day: 0,
-      //     Disallow_absent_day: 0
-      //   }
-      // ]
     }
   }
 }
