@@ -276,8 +276,9 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
                 class_days += 1
                 if not checks.filter(date__day=day):
                     not_attend_day += 1
-                if checks.filter(date__day=day).values('status')[0]['status'] == 0:
-                    not_attend_day += 1
+                else:
+                    if checks.filter(date__day=day).values('status')[0]['status'] == 0:
+                        not_attend_day += 1
         come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
         early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
         normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
@@ -291,18 +292,21 @@ def check_on_month(request, pk1, pk2, pk3, pk4, pk5):
         except ZeroDivisionError:
             attendance_rate = 0
             education_costs = 0
-        avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
-        if len(avg_in_time1[:-4]) == 2:
-            avg_in_time2 = avg_in_time1[:-4]
-        else:
-            avg_in_time2 = '0'+avg_in_time1[:-4]
-        avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
-        avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
-        if len(avg_out_time1[:-4]) == 2:
-            avg_out_time2 = avg_out_time1[:-4]
-        else:
-            avg_out_time2 = '0'+avg_out_time1[:-4]
-        avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
+        avg_in_time = '-'
+        avg_out_time = '-'
+        if checks:
+            avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
+            if len(avg_in_time1[:-4]) == 2:
+                avg_in_time2 = avg_in_time1[:-4]
+            else:
+                avg_in_time2 = '0'+avg_in_time1[:-4]
+            avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
+            avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
+            if len(avg_out_time1[:-4]) == 2:
+                avg_out_time2 = avg_out_time1[:-4]
+            else:
+                avg_out_time2 = '0'+avg_out_time1[:-4]
+            avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
         data = {
             'student_id': student[0],
             'name': student[1],
@@ -366,18 +370,21 @@ def check_on_month_all(request, pk1, pk2):
         except ZeroDivisionError:
             attendance_rate = 0
             education_costs = 0
-        avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
-        if len(avg_in_time1[:-4]) == 2:
-            avg_in_time2 = avg_in_time1[:-4]
-        else:
-            avg_in_time2 = '0'+avg_in_time1[:-4]
-        avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
-        avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
-        if len(avg_out_time1[:-4]) == 2:
-            avg_out_time2 = avg_out_time1[:-4]
-        else:
-            avg_out_time2 = '0'+avg_out_time1[:-4]
-        avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
+        avg_in_time = '-'
+        avg_out_time = '-'
+        if checks:
+            avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
+            if len(avg_in_time1[:-4]) == 2:
+                avg_in_time2 = avg_in_time1[:-4]
+            else:
+                avg_in_time2 = '0'+avg_in_time1[:-4]
+            avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
+            avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
+            if len(avg_out_time1[:-4]) == 2:
+                avg_out_time2 = avg_out_time1[:-4]
+            else:
+                avg_out_time2 = '0'+avg_out_time1[:-4]
+            avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
         data = {
             'stage': student[2],
             'region': student[3],
@@ -419,8 +426,9 @@ def check_on_month_one(request, pk1, pk2, pk3):
             class_days += 1
             if not checks.filter(date__day=day):
                 not_attend_day += 1
-            if checks.filter(date__day=day).values('status')[0]['status'] == 0:
-                not_attend_day += 1
+            else:
+                if checks.filter(date__day=day).values('status')[0]['status'] == 0:
+                    not_attend_day += 1
     come_late_cnt = checks.filter(status=1, in_time__gte='09:00:00').aggregate(Count('id'))['id__count']
     early_left_cnt = checks.filter(status=1, out_time__range=('14:00:01', '17:59:59')).aggregate(Count('id'))['id__count']
     normal_attend_day = checks.filter(in_time__isnull=False, is_late=0, is_early_left=0).aggregate(Count('id'))['id__count']-come_late_cnt-early_left_cnt
@@ -434,18 +442,21 @@ def check_on_month_one(request, pk1, pk2, pk3):
     except ZeroDivisionError:
         attendance_rate = '0'
         education_costs = '0'
-    avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
-    if len(avg_in_time1[:-4]) == 2:
-        avg_in_time2 = avg_in_time1[:-4]
-    else:
-        avg_in_time2 = '0'+avg_in_time1[:-4]
-    avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
-    avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
-    if len(avg_out_time1[:-4]) == 2:
-        avg_out_time2 = avg_out_time1[:-4]
-    else:
-        avg_out_time2 = '0'+avg_out_time1[:-4]
-    avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
+    avg_in_time = '-'
+    avg_out_time = '-'
+    if checks:
+        avg_in_time1 = '{:.0f}'.format(checks.values('in_time').aggregate(Avg('in_time'))['in_time__avg'])
+        if len(avg_in_time1[:-4]) == 2:
+            avg_in_time2 = avg_in_time1[:-4]
+        else:
+            avg_in_time2 = '0'+avg_in_time1[:-4]
+        avg_in_time = avg_in_time2+':'+avg_in_time1[-4:-2]+':'+'00'
+        avg_out_time1 = '{:.0f}'.format(checks.values('out_time').aggregate(Avg('out_time'))['out_time__avg'])
+        if len(avg_out_time1[:-4]) == 2:
+            avg_out_time2 = avg_out_time1[:-4]
+        else:
+            avg_out_time2 = '0'+avg_out_time1[:-4]
+        avg_out_time = avg_out_time2+':'+avg_out_time1[-4:-2]+':'+'00'
     data = {
         'student_id': student_id,
         'name': name,
