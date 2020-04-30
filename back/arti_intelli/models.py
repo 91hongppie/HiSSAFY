@@ -30,7 +30,7 @@ class Account(models.Model):
 
 class Check(models.Model):
     date = models.DateField(auto_now_add=True)
-    in_time = models.TimeField(auto_now=True, null=True)
+    in_time = models.TimeField(auto_now_add=True, null=True)
     out_time = models.TimeField(blank=True, null=True)
     is_late = models.BooleanField(default=False)
     is_early_left = models.BooleanField(default=False)
