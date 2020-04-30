@@ -11,40 +11,42 @@
         {{ locations[lo - 1] }}
       </v-chip>
     </div>
-    <div v-for="st in Object.keys(selectedData)" :key="`data-` + st" class="px-3 d-flex flex-column mx-0 statNow">
-      <!-- 기수 -->
-      <div v-for="cl in Object.keys(selectedData[st])" :key="`${st}-${cl}`">
-        <div>
-          <v-chip :color="stage[st - 1]" small>
-            {{ st }}기
-          </v-chip>
-          <v-btn :to="`/main/classes/${st}n${default_campus.indexOf(true) + 1}n${cl}`" text>
-            <h3>{{ locations[selectLocation] }} {{ cl }}반</h3>
-          </v-btn>
-        </div>
-        <!-- 차트 -->
-        <div class="classBox">
-          <my-doughnut
-            v-if="showLine"
-            :data="setChartData(selectedData[st][cl]['check'].length, selectedData[st][cl]['uncheck'].length)"
-            :options="options"
-            :location="default_campus.findIndex(isTrue) + 1"
-            style="width: 300px; height: 300px; display: inline-block;"
-          />
-          <!-- 출석 안 한 사람 -->
-          <div class="text-center px-5 mx-10" style="width: 100%;">
-            <h3 class="gugi-30">출석 안 한 사람 <v-chip dark class="jua" :class="{ 'red': selectedData[st][cl]['uncheck'].length > 20, 'green' : selectedData[st][cl]['uncheck'].length > 4 && selectedData[st][cl]['uncheck'].length <= 20, 'blue': selectedData[st][cl]['uncheck'].length >= 0 && selectedData[st][cl]['uncheck'].length <= 4 }">{{ selectedData[st][cl]['uncheck'].length }}명</v-chip></h3>
-            <div class="yetList">
-              <v-row v-for="num in (Math.ceil(selectedData[st][cl]['uncheck'].length / 8))" :key="num">
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8].name }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 1] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 1].name : '' }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 2] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 2].name : '' }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 3] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 3].name : '' }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 4] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 4].name : '' }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 5] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 5].name : '' }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 6] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 6].name : '' }}</v-col>
-                <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 7] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 7].name : '' }}</v-col>
-              </v-row>
+    <div v-if="selectedData">
+      <div v-for="st in Object.keys(selectedData)" :key="`data-` + st" class="px-3 d-flex flex-column mx-0 statNow">
+        <!-- 기수 -->
+        <div v-for="cl in Object.keys(selectedData[st])" :key="`${st}-${cl}`">
+          <div>
+            <v-chip :color="stage[st - 1]" small>
+              {{ st }}기
+            </v-chip>
+            <v-btn :to="`/main/classes/${st}n${default_campus.indexOf(true) + 1}n${cl}`" text>
+              <h3>{{ locations[selectLocation] }} {{ cl }}반</h3>
+            </v-btn>
+          </div>
+          <!-- 차트 -->
+          <div class="classBox">
+            <my-doughnut
+              v-if="showLine"
+              :data="setChartData(selectedData[st][cl]['check'].length, selectedData[st][cl]['uncheck'].length)"
+              :options="options"
+              :location="default_campus.findIndex(isTrue) + 1"
+              style="width: 300px; height: 300px; display: inline-block;"
+            />
+            <!-- 출석 안 한 사람 -->
+            <div class="text-center px-5 mx-10" style="width: 100%;">
+              <h3 class="gugi-30">출석 안 한 사람 <v-chip dark class="jua" :class="{ 'red': selectedData[st][cl]['uncheck'].length > 20, 'green' : selectedData[st][cl]['uncheck'].length > 4 && selectedData[st][cl]['uncheck'].length <= 20, 'blue': selectedData[st][cl]['uncheck'].length >= 0 && selectedData[st][cl]['uncheck'].length <= 4 }">{{ selectedData[st][cl]['uncheck'].length }}명</v-chip></h3>
+              <div class="yetList">
+                <v-row v-for="num in (Math.ceil(selectedData[st][cl]['uncheck'].length / 8))" :key="num">
+                  <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8].name }}</v-col>
+                  <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 1] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 1].name : '' }}</v-col>
+                  <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 2] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 2].name : '' }}</v-col>
+                  <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 3] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 3].name : '' }}</v-col>
+                  <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 4] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 4].name : '' }}</v-col>
+                  <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 5] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 5].name : '' }}</v-col>
+                  <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 6] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 6].name : '' }}</v-col>
+                  <v-col class="rowConfig">{{ selectedData[st][cl]['uncheck'][(num - 1) * 8 + 7] ? selectedData[st][cl]['uncheck'][(num - 1) * 8 + 7].name : '' }}</v-col>
+                </v-row>
+              </div>
             </div>
           </div>
         </div>
