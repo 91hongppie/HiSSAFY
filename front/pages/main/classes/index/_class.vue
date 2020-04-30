@@ -41,7 +41,7 @@ export default {
     return {
       className: '',
       statName: ['정상 입실', '지각', '조퇴', '결석'],
-      locations: ['서울', '대전', '광주', '구미']
+      locations: ['서울', '대전', '구미', '광주']
     }
   },
   mounted () {

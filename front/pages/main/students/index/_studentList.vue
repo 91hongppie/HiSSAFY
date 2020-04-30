@@ -210,7 +210,7 @@ export default {
   },
   data () {
     return {
-      locations: ['', '서울', '대전', '광주', '구미']
+      locations: ['', '서울', '대전', '구미', '광주']
     }
   }
 }

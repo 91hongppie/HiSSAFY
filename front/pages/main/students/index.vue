@@ -65,11 +65,11 @@ export default {
           value: 2
         },
         {
-          text: '광주',
+          text: '구미',
           value: 3
         },
         {
-          text: '구미',
+          text: '광주',
           value: 4
         }
       ],
