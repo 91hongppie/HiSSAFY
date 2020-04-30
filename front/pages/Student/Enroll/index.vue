@@ -1,10 +1,6 @@
 <template>
   <div class="container blue">
-    <v-dialog
-      @before-opened="dialogEvent('before-open')"
-      @before-closed="dialogEvent('before-close')"
-      @opened="dialogEvent('opened')"
-      @closed="dialogEvent('closed')"/>
+    <v-dialog />
     <div id="goback">
       <v-btn color="secondary mr-5" @click="goBack()">뒤로가기</v-btn>
     </div>
@@ -121,17 +117,11 @@ export default {
       this.$router.push('/')
     },
     checkForm () {
-      console.log((this.rules.campusConfirm(this.form.campus) === true &&
-        this.rules.studentIdConfirm(this.form.student_id) === true &&
-        this.rules.infoConfirm(this.form.stage) === true &&
-        this.rules.infoConfirm(this.form.classes) === true &&
-        this.rules.birthdayConfirm(this.form.birthday) === true))
       if (this.rules.campusConfirm(this.form.campus) === true &&
         this.rules.studentIdConfirm(this.form.student_id) === true &&
         this.rules.infoConfirm(this.form.stage) === true &&
         this.rules.infoConfirm(this.form.classes) === true &&
         this.rules.birthdayConfirm(this.form.birthday) === true) {
-        console.log(this.rules)
         this.isSubmit = true
         return true
       } else {
@@ -260,16 +250,12 @@ export default {
             })
           }
         },
-        (err) => {
-          console.log(err)
+        () => {
           this.$modal.show('dialog', {
             text: '개인정보를 다시 한번 확인해주세요.'
           })
         }
       )
-    },
-    dialogEvent (eventName) {
-      console.log('Dialog event: ' + eventName)
     }
   }
 }

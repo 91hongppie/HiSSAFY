@@ -64,7 +64,7 @@ class Recognition(APIView):
                     for dt in data:
                         dt = [np.asarray(dt)]
                         distance = fr.face_distance(dt, unknown_face[0])
-                        if distance < dis and distance < 0.5:
+                        if distance < dis and distance < 0.4:
                             dis = distance
                             account_student_id = student_id
                 if account_student_id:
