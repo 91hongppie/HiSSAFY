@@ -653,4 +653,3 @@ def classes_attendance(request, pk1, pk2, pk3):
     data = {'avg_attendance_rate': '{:.0f}'.format(avg_attendance_rate)}
     datas.append(data)
     return Response(datas)
-
