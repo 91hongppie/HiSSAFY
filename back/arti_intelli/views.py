@@ -73,6 +73,7 @@ class Recognition(APIView):
                     datas[account_student_id].append(unknown_face[0].tolist())
                     with open(f'data/accounts_{region}.json', 'w', encoding='utf-8') as accounts:
                         json.dump(datas, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
+
                 student_id = account_student_id
                 students = Account.objects.filter(student_id=student_id)[0]
                 checks = Check.objects.filter(date=date.today(), student_info_id=students.id)
