@@ -1,6 +1,21 @@
 <template>
   <div class="container blue">
-    <v-dialog />
+    <modal name="photo" width="450" height="300">
+      <div class="d-flex flex-column justify-center align-center modal-box" style="height: 100%; background-color: #252525; color: white;">
+        <div class="nanumG-25">
+          <span style="color: #2196f3;">얼굴</span>이 나오게 사진을 찍어주세요
+        </div>
+        <span class="nanumG-15">- 이 창을 닫으려면 바깥쪽을 클릭해주세요 -</span>
+      </div>
+    </modal>
+    <modal name="individual" width="450" height="300">
+      <div class="d-flex flex-column justify-center align-center modal-box" style="height: 100%; background-color: #252525; color: white;">
+        <div class="nanumG-25">
+          <span style="color: #2196f3;">입력한 정보</span>를 다시 확인해주세요
+        </div>
+        <span class="nanumG-15">- 이 창을 닫으려면 바깥쪽을 클릭해주세요 -</span>
+      </div>
+    </modal>
     <div id="goback">
       <v-btn color="secondary mr-5" @click="goBack()">뒤로가기</v-btn>
     </div>
@@ -245,15 +260,11 @@ export default {
               path: '/student/enroll/completed_enroll'
             })
           } else if (res.status === 204) {
-            this.$modal.show('dialog', {
-              text: '얼굴이 잘나오도록 사진을 다시 촬영해주세요.'
-            })
+            this.$modal.show('photo')
           }
         },
         () => {
-          this.$modal.show('dialog', {
-            text: '개인정보를 다시 한번 확인해주세요.'
-          })
+          this.$modal.show('individual')
         }
       )
     }
@@ -309,5 +320,15 @@ export default {
   width: 100%;
   align-content: center;
   justify-content: center;
+}
+
+.nanumG-25 {
+  font-family: 'Nanum Gothic', sans-serif;
+  font-size: 1.5rem;
+}
+
+.nanumG-15 {
+  font-family: 'Nanum Gothic', sans-serif;
+  font-size: 1rem;
 }
 </style>
