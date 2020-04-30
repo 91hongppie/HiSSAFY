@@ -22,7 +22,7 @@
 
 ![r12](https://user-images.githubusercontent.com/52685206/80731125-70d17180-8b45-11ea-9d2b-5c9dcc3de8e0.png)
 
-![r13](https://user-images.githubusercontent.com/52685206/80731127-716a0800-8b45-11ea-86b0-3e68ac9a97c7.png)
+![r13](https://user-images.githubusercontent.com/52685206/80742956-278a1d80-8b57-11ea-93bd-8c4dcd69a29f.png)
 
 ![r14](https://user-images.githubusercontent.com/52685206/80731132-72029e80-8b45-11ea-90cd-49a1900d1f37.png)
 
