@@ -101,15 +101,6 @@ export default {
       }
       return temp
     }
-    // getUrlParams () {
-    //   const params = {}
-    //   window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (str, key, value) { params[key] = value })
-    //   return params
-    // },
-    // searchStudent () {
-    //   this.urlParams = this.getUrlParams()
-    //   console.log(this.urlParams)
-    // }
   }
 }
 </script>

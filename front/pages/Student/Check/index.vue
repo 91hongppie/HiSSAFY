@@ -116,7 +116,6 @@ export default {
         .then(function (stream) {
           video.srcObject = stream
         })
-        .catch(err => console.error(err))
 
       video.addEventListener('play', () => {
         const canvas = faceapi.createCanvasFromMedia(video)
@@ -139,7 +138,6 @@ export default {
             formdata.append('region_id', this.selectLocation + 1)
             this.$axios.$post('/api/recognition/', formdata)
               .then((data) => {
-                console.log(data)
                 for (let i = 0; i < data.length; i++) {
                   const element = data[i][0]
                   if (!this.studentNames[element.region - 1].includes(element.name)) {
@@ -161,7 +159,6 @@ export default {
                   }
                 }
               })
-              .catch(e => console.error(e))
           }
         }, 2000)
       })
