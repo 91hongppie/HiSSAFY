@@ -67,7 +67,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: process.env.BASE_URL || 'https://i02b106.p.ssafy.io'
+    baseURL: process.env.BASE_URL || 'http://localhost:8000/'
   },
   /*
   ** Build configuration
