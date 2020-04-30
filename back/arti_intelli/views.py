@@ -56,35 +56,28 @@ class Recognition(APIView):
                 image_face = image1[top:bottom, left:right]
                 image_face = cv2.add(image_face,np.array([30.0]))
                 unknown_face = fr.face_encodings(image_face)
-                print(11111111111111111111111111111111111)
                 dis = 1
-                print(region)
                 # region_name = request.data.get('region')
                 with open(f'data/accounts_{region}.json') as accounts:
-                    print(333333333333333333333333333333333)
                     datas = json.load(accounts)
-                print(111111111211122222222222221111111111111111111111)
                 for student_id, data in datas.items():
                     for dt in data:
                         dt = [np.asarray(dt)]
                         distance = fr.face_distance(dt, unknown_face[0])
                         if distance < dis and distance < 0.5:
-                            if not Check.objects.filter(student_info=student_id):
-                                dis = distance
-                                account_student_id = student_id
-                print(555555555555555555555555555555555555)
+                            dis = distance
+                            account_student_id = student_id
                 if account_student_id:
                     if len(datas[account_student_id]) == 20:
                         datas[account_student_id] = datas[account_student_id][1::]
                     datas[account_student_id].append(unknown_face[0].tolist())
                     with open(f'data/accounts_{region}.json', 'w', encoding='utf-8') as accounts:
                         json.dump(datas, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
-                print(66666666666666666666666666666666)
                 student_id = account_student_id
-                checks = Check.objects.filter(date=date.today(), student_info_id=student_id)
-                students = Account.objects.filter(student_id=student_id)
-                student = AccountSerializer(students[0]).data['id']
-                if not checks:
+                students = Account.objects.filter(student_id=student_id)[0]
+                checks = Check.objects.filter(date=date.today(), student_info_id=students.id)
+                student = AccountSerializer(students).data['id']
+                if len(checks) == 0:
                     status = cv2.imwrite(f'in_pic/{region_id}/{date.today()}_{student_id}.jpg', image1)
                     if now < in_time:
                         Check.objects.create(date=date.today(), in_time=now, status='1', student_info=Account.objects.get(id=student))
@@ -107,10 +100,8 @@ class Recognition(APIView):
                             checks[0].save()
                 accounts = Account.objects.filter(student_id=account_student_id)
                 serializer = AccountSerializer(accounts, many=True)
-                print(serializer.data)
                 data_list.append(serializer.data)
         except:
-            print(111111111111111111111)
             return Response(data_list)
         return Response(data_list)
 
