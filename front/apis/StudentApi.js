@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const Enroll = (data, callback, errorCallback) => {
-  axios.post('http://127.0.0.1:8000/api/add/account/', data)
+  axios.post('https://i02b106.p.ssafy.io/api/add/account/', data)
     .then((res) => {
       callback(res)
     })
