@@ -27,6 +27,13 @@
             님이 입실하셨습니다.
           </div>
         </div>
+        <div class="outCheck">
+          <div v-for="outStudentName in outStudentNames[selectLocation].length" :key="outStudentName.id">
+            {{ outStudentNames[selectLocation][outStudentName - 1] }}
+            {{ outStudentIds[selectLocation][outStudentName - 1] }}
+            님이 퇴실하셨습니다.
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -43,7 +50,9 @@ export default {
       default_campus: [true, false, false, false],
       selectLocation: 0,
       studentNames: [[], [], [], []],
-      studentIds: [[], [], [], []]
+      studentIds: [[], [], [], []],
+      outStudentNames: [[], [], [], []],
+      outStudentIds: [[], [], [], []]
     }
   },
   watch: {
@@ -133,13 +142,22 @@ export default {
                 console.log(data)
                 for (let i = 0; i < data.length; i++) {
                   const element = data[i][0]
-                  if (this.studentNames[element.region - 1].length === 20) {
-                    this.studentNames[element.region - 1] = this.studentNames[element.region - 1].slice(1, this.studentNames[element.region - 1].length)
-                    this.studentIds[element.region - 1] = this.studentIds[element.region - 1].slice(1, this.studentIds[element.region - 1].length)
-                  }
                   if (!this.studentNames[element.region - 1].includes(element.name)) {
                     this.studentNames[element.region - 1].push(element.name)
                     this.studentIds[element.region - 1].push(element.student_id)
+                  } else {
+                    const nowTime = new Date()
+                    const hour = nowTime.getHours()
+                    const idx = this.outStudentNames[element.region - 1].indexOf(element.name)
+                    if (hour >= 14 && idx === -1) {
+                      this.outStudentNames[element.region - 1].push(element.name)
+                      this.outStudentIds[element.region - 1].push(element.student_id)
+                    } else if (hour >= 14 && idx !== -1) {
+                      this.outStudentNames[element.region - 1].splice(idx, 1)
+                      this.outStudentIds[element.region - 1].splice(idx, 1)
+                      this.outStudentNames[element.region - 1].push(element.name)
+                      this.outStudentIds[element.region - 1].push(element.student_id)
+                    }
                   }
                 }
               })
@@ -303,6 +321,16 @@ button.btn {
     margin-left: 20px;
     color: #ffffff;
   }
+  .outCheck {
+    width: 100%;
+    height: 200px;
+    position: absolute;
+    overflow: auto;
+    margin-left: 70%;
+    align-items: right;
+    justify-content: right;
+    color: #ffffff;
+  }
 }
 
 @media ( max-width: 1050px) {
@@ -317,10 +345,18 @@ button.btn {
   }
   .inCheck {
     width: 100%;
-    height: 200px;
+    height: 100px;
     overflow: auto;
-    position: relative;
+    position: absolute;
     margin-left: 20px;
+    color: #ffffff;
+  }
+  .outCheck {
+    width: 100%;
+    height: 100px;
+    margin-left: 50%;
+    overflow: auto;
+    position: absolute;
     color: #ffffff;
   }
 }

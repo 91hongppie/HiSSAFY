@@ -75,8 +75,8 @@ class Recognition(APIView):
                         json.dump(datas, accounts, cls=NumpyArrayEncoder, ensure_ascii=False, indent=2)
 
                 student_id = account_student_id
-                checks = Check.objects.filter(date=date.today(), student_info__student_id=student_id)
                 students = Account.objects.filter(student_id=student_id)[0]
+                checks = Check.objects.filter(date=date.today(), student_info_id=students.id)
                 student = AccountSerializer(students).data['id']
                 if len(checks) == 0:
                     status = cv2.imwrite(f'in_pic/{region_id}/{date.today()}_{student_id}.jpg', image1)
