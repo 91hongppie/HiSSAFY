@@ -81,16 +81,16 @@ class Recognition(APIView):
                 if len(checks) == 0:
                     status = cv2.imwrite(f'in_pic/{region_id}/{date.today()}_{student_id}.jpg', image1)
                     if now < in_time:
-                        Check.objects.create(date=date.today(), in_time=now, status='1', student_info=Account.objects.get(id=student))
+                        Check.objects.create(date=date.today(), in_time=now, status=1, student_info=Account.objects.get(id=student))
                     else:
-                        Check.objects.create(date=date.today(), in_time=now, is_late=True, status='1', student_info=Account.objects.get(id=student))
+                        Check.objects.create(date=date.today(), in_time=now, is_late=True, status=1, student_info=Account.objects.get(id=student))
                 else:
                     status = cv2.imwrite(f'out_pic/{region_id}/{date.today()}_{student_id}.jpg', image1)
                     if now >= out_time:
                         checks[0].out_time = now
                         checks[0].is_early_left = False
                         checks[0].save()
-                    else:
+                    elif now.hour >= 14:
                         if now >= early_left_time:
                             checks[0].out_time = now
                             checks[0].is_early_left = True
