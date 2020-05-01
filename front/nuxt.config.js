@@ -20,7 +20,10 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/hi_ssafy.ico' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Gugi|Nanum+Gothic|Noto+Sans+KR|Jua&display=swap' }
-    ]
+    ],
+    htmlAttrs: {
+      lang: 'ko'
+    }
   },
   /*
   ** Customize the progress-bar color
