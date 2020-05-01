@@ -20,7 +20,7 @@
 
 ![r11](https://user-images.githubusercontent.com/52685206/80731123-70d17180-8b45-11ea-964f-e9fc6c575601.png)
 
-![r12](https://user-images.githubusercontent.com/52685206/80731125-70d17180-8b45-11ea-9d2b-5c9dcc3de8e0.png)
+![r12](https://user-images.githubusercontent.com/52685206/80773294-73a78300-8b94-11ea-866e-cde3d2d13ec6.png)
 
 ![r13](https://user-images.githubusercontent.com/52685206/80742956-278a1d80-8b57-11ea-93bd-8c4dcd69a29f.png)
 
