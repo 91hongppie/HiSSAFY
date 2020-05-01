@@ -243,7 +243,7 @@ def check_on(request):
         else:
             if not datas[account.region.id][account.stage].get(account.classes):
                 datas[account.region.id][account.stage][account.classes] = {'members': 0, 'check': [], 'uncheck': []}
-        if Check.objects.filter(date=date.today(), status=1, student_info=account.id):
+        if Check.objects.filter(date=date.today(), student_info=account.id):
             datas[account.region.id][account.stage][account.classes]['check'].append({'student_id': account.student_id, 'name':account.name})
         else:
             datas[account.region.id][account.stage][account.classes]['uncheck'].append({'student_id': account.student_id, 'name':account.name})
