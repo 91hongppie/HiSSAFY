@@ -16,7 +16,7 @@
     "@nuxtjs/dotenv": "^1.4.0",
     "@nuxtjs/pwa": "^3.0.0-0",
     "@tensorflow/tfjs-node": "^1.7.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "canvas": "^2.6.1",
     "chart.js": "^2.9.3",
     "chartjs": "^0.3.24",
