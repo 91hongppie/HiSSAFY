@@ -16,7 +16,7 @@ django-cors-headers==3.2.1
 django-imagekit==4.0.2
 django-rest-auth==0.9.5
 django-rest-swagger==2.2.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 djangorestframework-jwt==1.11.0
 dlib==19.19.0
 drf-yasg==1.17.1
