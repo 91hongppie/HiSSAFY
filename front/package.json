@@ -18,7 +18,7 @@
     "@tensorflow/tfjs-node": "^1.7.3",
     "axios": "^0.19.2",
     "canvas": "^2.6.1",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "chartjs": "^0.3.24",
     "face-api.js": "^0.22.2",
     "nuxt": "^2.0.0",
